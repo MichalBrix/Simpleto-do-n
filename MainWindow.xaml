@@ -1,0 +1,86 @@
+﻿<Window x:Class="TodoLists.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TodoLists"
+        xmlns:localData="clr-namespace:TodoLists.Data"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <Style x:Key="LibraryTreeViewItemStyle"
+               TargetType="{x:Type TreeViewItem}">
+            <Setter Property="IsExpanded"
+                        Value="{Binding IsExpanded, Mode=TwoWay}" />
+            <Setter Property="IsSelected"
+                        Value="{Binding IsSelected, Mode=TwoWay}" />
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <DockPanel HorizontalAlignment="Stretch">
+            <DockPanel.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type localData:ToDoElement}" ItemsSource="{Binding Path=Children}">
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid VerticalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Button Name="ArrowUpButton" Grid.Row="0" VerticalAlignment="Top" MaxHeight="15" Click="ArrowUpButton_Click">
+                                <Image>
+                                    <Image.Style>
+                                        <Style TargetType="{x:Type Image}">
+                                            <Setter Property="Source" Value="Art/ArrowUp.png"></Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Source" Value="Art/ActiveArrowUp.png"></Setter>
+                                                </Trigger>
+                                                <Trigger Property="IsMouseOver" Value="False">
+                                                    <Setter Property="Source" Value="Art/ArrowUp.png"></Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+                            </Button>
+                            <Button Name="ArrowDownButton" Grid.Row="1" VerticalAlignment="Bottom" MaxHeight="15" Click="ArrowDownButton_Click">
+                                <Image>
+                                    <Image.Style>
+                                        <Style TargetType="{x:Type Image}">
+                                            <Setter Property="Source" Value="Art/ArrowDown.png"></Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Source" Value="Art/ActiveArrowDown.png"></Setter>
+                                                </Trigger>
+                                                <Trigger Property="IsMouseOver" Value="False">
+                                                    <Setter Property="Source" Value="Art/ArrowDown.png"></Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+                            </Button>
+                        </Grid>
+                        <TextBox local:FocusExtension.IsFocused="{Binding Path=IsTextBoxFocused, Mode=TwoWay}" Grid.Column="1" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" PreviewKeyDown="TextBox_PreviewKeyDown" BorderBrush="White" Text="{Binding Path=Description, Mode=TwoWay}" HorizontalAlignment="Stretch" AcceptsReturn="True" SpellCheck.IsEnabled="True"></TextBox>
+                    </Grid>
+
+                </HierarchicalDataTemplate>
+            </DockPanel.Resources>
+
+            <TreeView Name="ToDoTree" ItemContainerStyle="{StaticResource LibraryTreeViewItemStyle}" PreviewKeyDown="ToDoTree_PreviewKeyDown" VirtualizingStackPanel.IsVirtualizing ="False"></TreeView>
+        </DockPanel>
+    </Grid>
+</Window>

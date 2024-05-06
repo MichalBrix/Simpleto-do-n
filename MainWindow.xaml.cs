@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -41,6 +42,7 @@ namespace TodoLists
             }
 
             InitializeComponent();
+
             this.FontFamily = new FontFamily("Consolas");
             this.FontSize = 16;
             this.ToDoTree.ItemsSource = this.ToDoElements;
@@ -160,6 +162,36 @@ namespace TodoLists
             var button = sender as Button;
             var element = button.DataContext as ToDoElement;
             this.TreeViewMutator.MoveElementDown(element);
+        }
+
+        private DateTime? LastPress = null;
+
+        private void TextBox_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                if (this.LastPress != null) {
+                    var ct = DateTime.Now;
+                    var dt = ct.Subtract(this.LastPress.Value);
+                    if (dt.TotalSeconds > 1)
+                    {
+                        var textBox = sender as TextBox;
+                        var data = textBox.DataContext as ToDoElement;
+                        DragDrop.DoDragDrop(textBox, data, DragDropEffects.Move);
+
+                    }
+                }
+            }
+        }
+
+        private void TextBox_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            this.LastPress = DateTime.Now;
+        }
+
+        private void TextBox_PreviewDragOver(object sender, DragEventArgs e)
+        {
+            e.Handled = true;
         }
     }
 }

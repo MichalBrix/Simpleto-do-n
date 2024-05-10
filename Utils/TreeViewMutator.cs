@@ -211,7 +211,7 @@ namespace TodoLists.Utils
 
                 if (!possibleNewParent.IsExpanded)
                 {
-                    this._finalMutators.RebaseOnIndex(ele, eleData.Index + 1, eleData.ParentList, eleData.ParentList);
+                    this._finalMutators.RebaseOnIndex(ele, eleData.Index + 2, eleData.ParentList, eleData.ParentList);
                 }
                 else
                 {

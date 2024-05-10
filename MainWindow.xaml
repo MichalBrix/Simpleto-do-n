@@ -125,60 +125,74 @@
             <DockPanel.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type localData:ToDoElement}" ItemsSource="{Binding Path=Children}">
                     <Border BorderBrush="LightGray" BorderThickness=" 0 0.7 0 0.7">
-                    <Grid HorizontalAlignment="Stretch" MinWidth="400">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="10"></ColumnDefinition>
-                            <ColumnDefinition Width="20"></ColumnDefinition>
-                            <ColumnDefinition Width="27"></ColumnDefinition>
-                            <ColumnDefinition Width="50"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Grid VerticalAlignment="Center" Grid.Column="4">
+                        <Grid HorizontalAlignment="Stretch" MinWidth="400">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="10"></ColumnDefinition>
+                                <ColumnDefinition Width="20"></ColumnDefinition>
+                                <ColumnDefinition Width="27"></ColumnDefinition>
+                                <ColumnDefinition Width="50"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
                             </Grid.RowDefinitions>
-                            <Button AllowDrop="True" Name="ArrowUpButton" Grid.Row="0" DragDrop.Drop="ArrowUpButton_Drop" VerticalAlignment="Top" MaxHeight="15" Click="ArrowUpButton_Click">
-                                <Image>
-                                    <Image.Style>
-                                        <Style TargetType="{x:Type Image}">
-                                            <Setter Property="Source" Value="Art/ArrowUp.png"></Setter>
-                                            <Style.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Source" Value="Art/ActiveArrowUp.png"></Setter>
-                                                </Trigger>
-                                                <Trigger Property="IsMouseOver" Value="False">
-                                                    <Setter Property="Source" Value="Art/ArrowUp.png"></Setter>
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Image.Style>
-                                </Image>
-                            </Button>
-                                <Button AllowDrop="True" Name="ArrowDownButton" Grid.Row="1" DragDrop.Drop="ArrowDownButton_Drop" VerticalAlignment="Bottom" MaxHeight="15" Click="ArrowDownButton_Click">
-                                <Image>
-                                    <Image.Style>
-                                        <Style TargetType="{x:Type Image}">
-                                            <Setter Property="Source" Value="Art/ArrowDown.png"></Setter>
-                                            <Style.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Source" Value="Art/ActiveArrowDown.png"></Setter>
-                                                </Trigger>
-                                                <Trigger Property="IsMouseOver" Value="False">
-                                                    <Setter Property="Source" Value="Art/ArrowDown.png"></Setter>
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Image.Style>
-                                </Image>
-                            </Button>
-                        </Grid>
+                            <Grid VerticalAlignment="Center" Grid.Column="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Button AllowDrop="True" Name="ArrowUpButton" Grid.Row="0" DragDrop.Drop="ArrowUpButton_Drop" VerticalAlignment="Top" MaxHeight="15" Click="ArrowUpButton_Click">
+                                    <Path VerticalAlignment="Center" Stretch="Fill">
+                                        <Path.Style>
+                                            <Style TargetType="{x:Type Path}">
+                                                <Setter Property="Fill" Value="LightGray"></Setter>
+                                                <Setter Property="Stroke" Value="Black"></Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ElementName=ArrowUpButton, Path=IsMouseOver}" Value="True">
+                                                        <Setter Property="Fill" Value="Lime"></Setter>
+                                                        <Setter Property="Stroke" Value="DarkGreen"></Setter>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ElementName=ArrowUpButton, Path=IsMouseOver}" Value="False">
+                                                        <Setter Property="Fill" Value="LightGray"></Setter>
+                                                        <Setter Property="Stroke" Value="DarkGray"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Path.Style>
+                                        <Path.Data>
+                                            <PathGeometry Figures="M 15,0 L 30,10 L 15,5 L 0,10 L 15,0">
+                                            </PathGeometry>
+                                        </Path.Data>
+                                    </Path>
+                                </Button>
+                                <Button Height="20" Width="50" AllowDrop="True" Name="ArrowDownButton" Grid.Row="1" DragDrop.Drop="ArrowDownButton_Drop" VerticalAlignment="Bottom" HorizontalAlignment="Center" MaxHeight="15" Click="ArrowDownButton_Click">
+                                    <Path VerticalAlignment="Center" Stretch="Fill">
+                                        <Path.Style>
+                                            <Style TargetType="{x:Type Path}">
+                                                <Setter Property="Fill" Value="LightGray"></Setter>
+                                                <Setter Property="Stroke" Value="Black"></Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ElementName=ArrowDownButton, Path=IsMouseOver}" Value="True">
+                                                        <Setter Property="Fill" Value="Lime"></Setter>
+                                                        <Setter Property="Stroke" Value="DarkGreen"></Setter>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ElementName=ArrowDownButton, Path=IsMouseOver}" Value="False">
+                                                        <Setter Property="Fill" Value="LightGray"></Setter>
+                                                        <Setter Property="Stroke" Value="DarkGray"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Path.Style>
+                                        <Path.Data>
+                                            <PathGeometry Figures="M 15,10 L 30,0 L 15,5 L 0,0 L 15,10">
+                                            </PathGeometry>
+                                        </Path.Data>
+                                    </Path>
+                                </Button>
+                            </Grid>
                             <Canvas Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <Ellipse Name="DragPoint" MouseMove="Ellipse_MouseMove" Width="25" Height="25" Canvas.Top="-12.5" Canvas.Left="-12.5" Stroke="Black" StrokeThickness="0.8">
                                     <Ellipse.Style>
@@ -195,9 +209,9 @@
                                     </Ellipse.Style>
                                 </Ellipse>
                             </Canvas>
-                        <TextBox local:FocusExtension.IsFocused="{Binding Path=IsTextBoxFocused, Mode=TwoWay}" Grid.Column="0" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" PreviewKeyDown="TextBox_PreviewKeyDown" BorderBrush="White" Text="{Binding Path=Description, Mode=TwoWay}" AcceptsReturn="True" SpellCheck.IsEnabled="True"></TextBox>
+                            <TextBox local:FocusExtension.IsFocused="{Binding Path=IsTextBoxFocused, Mode=TwoWay}" Grid.Column="0" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" PreviewKeyDown="TextBox_PreviewKeyDown" BorderBrush="White" Text="{Binding Path=Description, Mode=TwoWay}" AcceptsReturn="True" SpellCheck.IsEnabled="True"></TextBox>
 
-                    </Grid>
+                        </Grid>
                     </Border>
                 </HierarchicalDataTemplate>
             </DockPanel.Resources>

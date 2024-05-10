@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using TodoLists.Data;
 
 namespace TodoLists.Utils
@@ -14,6 +15,17 @@ namespace TodoLists.Utils
         public TreeSearcher(ObservableCollection<ToDoElement> toDoElements)
         {
             _toDoElements = toDoElements;
+        }
+
+        public ToDoElement? GetElementByGuid(string guidStr)
+        {
+            var guid = Guid.Parse(guidStr);
+            ToDoElement? ele = null;
+            for (int i = 0; i < _toDoElements.Count && ele == null; i++)
+            {
+                ele = this._toDoElements[i].GetElementByGuid(guid);
+            }
+            return ele;
         }
 
         public int GetTopLevelIndenx(ToDoElement element)

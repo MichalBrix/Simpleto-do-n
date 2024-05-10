@@ -23,8 +23,29 @@ namespace TodoLists.Utils.Mutators
 
         public void RebaseOnIndex(ToDoElement element, int newIndex, ObservableCollection<ToDoElement> newParentCollection, ObservableCollection<ToDoElement> oldParentCollection)
         {
-            oldParentCollection.Remove(element);
-            newParentCollection.Insert(newIndex, element);
+            if (oldParentCollection == newParentCollection)
+            {
+                var oldIndex = oldParentCollection.IndexOf(element);
+                if (oldIndex == newIndex)
+                {
+                    return;
+                }
+                if (oldIndex > newIndex)
+                {
+                    newParentCollection.Insert(newIndex, element);
+                    oldParentCollection.RemoveAt(oldIndex + 1);
+                }
+                else
+                {
+                    newParentCollection.Insert(newIndex, element);
+                    oldParentCollection.RemoveAt(oldIndex);
+                }
+            }
+            else
+            {
+                oldParentCollection.Remove(element);
+                newParentCollection.Insert(newIndex, element);
+            }
         }
     }
 }

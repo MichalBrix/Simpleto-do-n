@@ -16,7 +16,7 @@ namespace TodoLists.Data
     public class ToDoElement: INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-
+        public Guid ID { get; set; } = Guid.NewGuid();
         public string Description { get; set; }
         public bool IsInProgress { get; set; }
         public bool IsFinished { get; set; }
@@ -70,6 +70,23 @@ namespace TodoLists.Data
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        public ToDoElement? GetElementByGuid(Guid id)
+        {
+            if (this.ID == id)
+            {
+                return this;
+            }
+            foreach (var c in this.Children)
+            {
+                var possible = c.GetElementByGuid(id);
+                if (possible != null)
+                {
+                    return possible;
+                }
+            }
+            return null;
         }
     }
 }

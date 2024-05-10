@@ -95,7 +95,7 @@ namespace TodoLists
 
         private void ToDoTree_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Up && Keyboard.Modifiers == (ModifierKeys.Shift | ModifierKeys.Control | ModifierKeys.Alt))
+            if (e.Key == Key.Up && Keyboard.Modifiers == (/*ModifierKeys.Shift | ModifierKeys.Control |*/ ModifierKeys.Alt))
             {
                 var treeView = sender as TreeView;
 
@@ -105,7 +105,7 @@ namespace TodoLists
                 }
                 e.Handled = true;
             }
-            else if (e.Key == Key.Down && Keyboard.Modifiers == (ModifierKeys.Shift | ModifierKeys.Control | ModifierKeys.Alt))
+            else if (e.Key == Key.Down && Keyboard.Modifiers == (/*ModifierKeys.Shift | ModifierKeys.Control |*/ ModifierKeys.Alt))
             {
                 var treeView = sender as TreeView;
 
@@ -116,7 +116,7 @@ namespace TodoLists
 
                 e.Handled = true;
             }
-            else if (e.Key == Key.Left && Keyboard.Modifiers == (ModifierKeys.Shift | ModifierKeys.Control | ModifierKeys.Alt))
+            else if (e.Key == Key.Left && Keyboard.Modifiers == (/*ModifierKeys.Shift | ModifierKeys.Control |*/ ModifierKeys.Alt))
             {
                 var treeView = sender as TreeView;
 
@@ -127,7 +127,7 @@ namespace TodoLists
 
                 e.Handled = true;
             }
-            else if (e.Key == Key.Right && Keyboard.Modifiers == (ModifierKeys.Shift | ModifierKeys.Control | ModifierKeys.Alt))
+            else if (e.Key == Key.Right && Keyboard.Modifiers == (/*ModifierKeys.Shift | ModifierKeys.Control |*/ ModifierKeys.Alt))
             {
                 var treeView = sender as TreeView;
 
@@ -164,34 +164,50 @@ namespace TodoLists
             this.TreeViewMutator.MoveElementDown(element);
         }
 
-        private DateTime? LastPress = null;
-
-        private void TextBox_MouseMove(object sender, MouseEventArgs e)
+        private void Ellipse_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                if (this.LastPress != null) {
-                    var ct = DateTime.Now;
-                    var dt = ct.Subtract(this.LastPress.Value);
-                    if (dt.TotalSeconds > 1)
-                    {
-                        var textBox = sender as TextBox;
-                        var data = textBox.DataContext as ToDoElement;
-                        DragDrop.DoDragDrop(textBox, data, DragDropEffects.Move);
-
-                    }
-                }
+                var ellipse = sender as Ellipse;
+                var data = ellipse.DataContext as ToDoElement;
+                DragDrop.DoDragDrop(ellipse, "ToDoElement.GUID:" + data.ID.ToString(), DragDropEffects.Move);
             }
         }
 
-        private void TextBox_MouseDown(object sender, MouseButtonEventArgs e)
+        private void ArrowDownButton_Drop(object sender, DragEventArgs e)
         {
-            this.LastPress = DateTime.Now;
+            var button = sender as Button;
+            var context = button.DataContext as ToDoElement;
+            var dropString = e.Data.GetData(DataFormats.Text) as string;
+            if (dropString.StartsWith("ToDoElement.GUID:"))
+            {
+                dropString = dropString.Split(':')[1];
+                var element = this.TreeSearcher.GetElementByGuid(dropString);
+                if (element != null)
+                {
+                    this.TreeViewMutator.DropElementDown(context, element);
+                }
+            }
+            
+            return;
         }
 
-        private void TextBox_PreviewDragOver(object sender, DragEventArgs e)
+        private void ArrowUpButton_Drop(object sender, DragEventArgs e)
         {
-            e.Handled = true;
+            var button = sender as Button;
+            var context = button.DataContext as ToDoElement;
+            var dropString = e.Data.GetData(DataFormats.Text) as string;
+            if (dropString.StartsWith("ToDoElement.GUID:"))
+            {
+                dropString = dropString.Split(':')[1];
+                var element = this.TreeSearcher.GetElementByGuid(dropString);
+                if (element != null)
+                {
+                    this.TreeViewMutator.DropElementUp(context, element);
+                }
+            }
+
+            return;
         }
     }
 }

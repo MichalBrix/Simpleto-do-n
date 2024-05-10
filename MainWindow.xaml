@@ -130,7 +130,7 @@
                             <ColumnDefinition Width="*"></ColumnDefinition>
                             <ColumnDefinition Width="10"></ColumnDefinition>
                             <ColumnDefinition Width="20"></ColumnDefinition>
-                            <ColumnDefinition Width="50"></ColumnDefinition>
+                            <ColumnDefinition Width="27"></ColumnDefinition>
                             <ColumnDefinition Width="50"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
@@ -144,7 +144,7 @@
                                 <RowDefinition></RowDefinition>
                                 <RowDefinition></RowDefinition>
                             </Grid.RowDefinitions>
-                            <Button Name="ArrowUpButton" Grid.Row="0" VerticalAlignment="Top" MaxHeight="15" Click="ArrowUpButton_Click">
+                            <Button AllowDrop="True" Name="ArrowUpButton" Grid.Row="0" DragDrop.Drop="ArrowUpButton_Drop" VerticalAlignment="Top" MaxHeight="15" Click="ArrowUpButton_Click">
                                 <Image>
                                     <Image.Style>
                                         <Style TargetType="{x:Type Image}">
@@ -161,7 +161,7 @@
                                     </Image.Style>
                                 </Image>
                             </Button>
-                            <Button Name="ArrowDownButton" Grid.Row="1" VerticalAlignment="Bottom" MaxHeight="15" Click="ArrowDownButton_Click">
+                                <Button AllowDrop="True" Name="ArrowDownButton" Grid.Row="1" DragDrop.Drop="ArrowDownButton_Drop" VerticalAlignment="Bottom" MaxHeight="15" Click="ArrowDownButton_Click">
                                 <Image>
                                     <Image.Style>
                                         <Style TargetType="{x:Type Image}">
@@ -179,7 +179,23 @@
                                 </Image>
                             </Button>
                         </Grid>
-                        <TextBox PreviewDragOver="TextBox_PreviewDragOver" MouseDown="TextBox_MouseDown" MouseMove="TextBox_MouseMove" local:FocusExtension.IsFocused="{Binding Path=IsTextBoxFocused, Mode=TwoWay}" Grid.Column="0" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" PreviewKeyDown="TextBox_PreviewKeyDown" BorderBrush="White" Text="{Binding Path=Description, Mode=TwoWay}" AcceptsReturn="True" SpellCheck.IsEnabled="True"></TextBox>
+                            <Canvas Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <Ellipse Name="DragPoint" MouseMove="Ellipse_MouseMove" Width="25" Height="25" Canvas.Top="-12.5" Canvas.Left="-12.5" Stroke="Black" StrokeThickness="0.8">
+                                    <Ellipse.Style>
+                                        <Style TargetType="{x:Type Ellipse}">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Fill" Value="LightGreen"></Setter>
+                                                </Trigger>
+                                                <Trigger Property="IsMouseOver" Value="False">
+                                                    <Setter Property="Fill" Value="LightBlue"></Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                            </Canvas>
+                        <TextBox local:FocusExtension.IsFocused="{Binding Path=IsTextBoxFocused, Mode=TwoWay}" Grid.Column="0" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" PreviewKeyDown="TextBox_PreviewKeyDown" BorderBrush="White" Text="{Binding Path=Description, Mode=TwoWay}" AcceptsReturn="True" SpellCheck.IsEnabled="True"></TextBox>
 
                     </Grid>
                     </Border>

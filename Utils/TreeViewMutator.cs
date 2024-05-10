@@ -109,6 +109,39 @@ namespace TodoLists.Utils
             return;
         }
 
+        public void DropElementUp(ToDoElement dropContext, ToDoElement droppedElement)
+        {
+            var dropData = this._treeSearcher.GetIndexAndParentCollectionFromElement(droppedElement);
+            var eleData = this._treeSearcher.GetIndexAndParentCollectionFromElement(dropContext);
+            if (eleData.Index == 0)
+            {
+                if (eleData.Parent != null)
+                {
+                    var parentData = this._treeSearcher.GetIndexAndParentCollectionFromElement(eleData.Parent);
+                    if (parentData.Index == 0)
+                    {
+                        this._finalMutators.RebaseAsFirst(droppedElement, parentData.ParentList, dropData.ParentList);
+                    }
+                    else
+                    {
+                        this._finalMutators.RebaseOnIndex(droppedElement, parentData.Index, parentData.ParentList, dropData.ParentList);
+                    }
+                }
+            }
+            else
+            {
+                if (!eleData.ParentList[eleData.Index - 1].IsExpanded)
+                {
+                    this._finalMutators.RebaseOnIndex(droppedElement, eleData.Index, eleData.ParentList, dropData.ParentList);
+                }
+                else
+                {
+                    var finalParent = this._treeSearcher.FindDeepestLastExpandedElement(eleData.ParentList[eleData.Index - 1]);
+                    this._finalMutators.RebaseAsLast(droppedElement, finalParent.Children, dropData.ParentList);
+                }
+            }
+        }
+
         public void MoveElementUp(ToDoElement ele)
         {
             var eleData = this._treeSearcher.GetIndexAndParentCollectionFromElement(ele);
@@ -138,6 +171,34 @@ namespace TodoLists.Utils
                     var finalParent = this._treeSearcher.FindDeepestLastExpandedElement(eleData.ParentList[eleData.Index - 1]);
                     this._finalMutators.RebaseAsLast(ele, finalParent.Children, eleData.ParentList);
                 }
+            }
+        }
+
+        public void DropElementDown(ToDoElement dropContext, ToDoElement droppedElement)
+        {
+            var dropData = this._treeSearcher.GetIndexAndParentCollectionFromElement(droppedElement);
+            var eleData = this._treeSearcher.GetIndexAndParentCollectionFromElement(dropContext);
+            if (eleData.Index != eleData.ParentList.Count - 1)
+            {
+                var possibleNewParent = eleData.ParentList[eleData.Index + 1];
+
+                if (!possibleNewParent.IsExpanded)
+                {
+                    this._finalMutators.RebaseOnIndex(droppedElement, eleData.Index + 1, eleData.ParentList, dropData.ParentList);
+                }
+                else
+                {
+                    this._finalMutators.RebaseAsFirst(droppedElement, possibleNewParent.Children, dropData.ParentList);
+                }
+            }
+            else
+            {
+                if (eleData.Parent == null)
+                {
+                    return;
+                }
+                var parentOfParent = this._treeSearcher.GetIndexAndParentCollectionFromElement(eleData.Parent);
+                this._finalMutators.RebaseOnIndex(droppedElement, parentOfParent.Index + 1, parentOfParent.ParentList, dropData.ParentList);
             }
         }
 

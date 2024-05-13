@@ -250,6 +250,7 @@
                                 </Ellipse>
                             </Canvas>
                             <TextBox local:FocusExtension.IsFocused="{Binding Path=IsTextBoxFocused, Mode=TwoWay}" Grid.Column="0" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" PreviewKeyDown="TextBox_PreviewKeyDown" BorderBrush="White" Text="{Binding Path=Description, Mode=TwoWay}" AcceptsReturn="True" SpellCheck.IsEnabled="True"></TextBox>
+                            <!--<TextBox Grid.Column="0" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" PreviewKeyDown="TextBox_PreviewKeyDown" BorderBrush="White" Text="{Binding Path=Description, Mode=TwoWay}" AcceptsReturn="True" SpellCheck.IsEnabled="True"></TextBox>-->
 
                         </Grid>
                     </Border>

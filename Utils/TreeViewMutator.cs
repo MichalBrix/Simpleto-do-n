@@ -236,10 +236,10 @@ namespace TodoLists.Utils
             this._finalMutators.RemoveElement(ele, eleData.ParentList);
         }
 
-        public void AddChildToElement(ToDoElement ele)
+        public ToDoElement AddChildToElement(ToDoElement ele)
         {
             ToDoElement newElement = this._finalMutators.AddNewChildToElement(ele);
-            newElement.IsTextBoxFocused = true;
+            return newElement;
         }
     }
 }

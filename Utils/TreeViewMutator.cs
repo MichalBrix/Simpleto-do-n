@@ -228,5 +228,18 @@ namespace TodoLists.Utils
                 this._finalMutators.RebaseOnIndex(ele, parentOfParent.Index+1, parentOfParent.ParentList, eleData.ParentList);
             }
         }
+
+
+        public void DeleteElement(ToDoElement ele)
+        {
+            var eleData = this._treeSearcher.GetIndexAndParentCollectionFromElement(ele);
+            this._finalMutators.RemoveElement(ele, eleData.ParentList);
+        }
+
+        public void AddChildToElement(ToDoElement ele)
+        {
+            ToDoElement newElement = this._finalMutators.AddNewChildToElement(ele);
+            newElement.IsTextBoxFocused = true;
+        }
     }
 }

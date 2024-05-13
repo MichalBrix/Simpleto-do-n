@@ -75,6 +75,11 @@ namespace TodoLists
 
         private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            if ((e.Key == Key.Up || e.Key == Key.Down || e.Key == Key.Left || e.Key == Key.Right) && Keyboard.Modifiers == ModifierKeys.Alt)
+            {
+                e.Handled = false;
+                return;
+            }
             if (e.Key == Key.Enter && Keyboard.Modifiers != ModifierKeys.Shift)
             {
                 //add new item here.
@@ -95,7 +100,7 @@ namespace TodoLists
 
         private void ToDoTree_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Up && Keyboard.Modifiers == (/*ModifierKeys.Shift | ModifierKeys.Control |*/ ModifierKeys.Alt))
+            if (e.SystemKey == Key.Up && Keyboard.Modifiers == (/*ModifierKeys.Shift | ModifierKeys.Control |*/ ModifierKeys.Alt))
             {
                 var treeView = sender as TreeView;
 
@@ -105,7 +110,7 @@ namespace TodoLists
                 }
                 e.Handled = true;
             }
-            else if (e.Key == Key.Down && Keyboard.Modifiers == (/*ModifierKeys.Shift | ModifierKeys.Control |*/ ModifierKeys.Alt))
+            else if (e.SystemKey == Key.Down && Keyboard.Modifiers == (/*ModifierKeys.Shift | ModifierKeys.Control |*/ ModifierKeys.Alt))
             {
                 var treeView = sender as TreeView;
 
@@ -116,7 +121,7 @@ namespace TodoLists
 
                 e.Handled = true;
             }
-            else if (e.Key == Key.Left && Keyboard.Modifiers == (/*ModifierKeys.Shift | ModifierKeys.Control |*/ ModifierKeys.Alt))
+            else if (e.SystemKey == Key.Left && Keyboard.Modifiers == (/*ModifierKeys.Shift | ModifierKeys.Control |*/ ModifierKeys.Alt))
             {
                 var treeView = sender as TreeView;
 
@@ -127,7 +132,7 @@ namespace TodoLists
 
                 e.Handled = true;
             }
-            else if (e.Key == Key.Right && Keyboard.Modifiers == (/*ModifierKeys.Shift | ModifierKeys.Control |*/ ModifierKeys.Alt))
+            else if (e.SystemKey == Key.Right && Keyboard.Modifiers == (/*ModifierKeys.Shift | ModifierKeys.Control |*/ ModifierKeys.Alt))
             {
                 var treeView = sender as TreeView;
 
@@ -208,6 +213,32 @@ namespace TodoLists
             }
 
             return;
+        }
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var context = button.DataContext as ToDoElement;
+            this.TreeViewMutator.DeleteElement(context);
+        }
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.OriginalSource is TextBox && (e.SystemKey == Key.LeftAlt || e.SystemKey == Key.RightAlt))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void MenuItem_AddChildBelow(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            var ele = menuItem.DataContext as ToDoElement;
+            if (ele.IsExpanded == false)
+            {
+                ele.IsExpanded = true;
+            }
+            this.TreeViewMutator.AddChildToElement(ele);
         }
     }
 }

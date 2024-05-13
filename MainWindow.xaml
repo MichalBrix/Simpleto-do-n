@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TodoLists"
         xmlns:localData="clr-namespace:TodoLists.Data"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" PreviewKeyDown="Window_PreviewKeyDown">
     <Window.Resources>
 
         <SolidColorBrush x:Key="TreeViewItem.TreeArrow.Static.Checked.Fill" Color="#FF595959"/>
@@ -129,14 +129,54 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                                 <ColumnDefinition Width="10"></ColumnDefinition>
-                                <ColumnDefinition Width="20"></ColumnDefinition>
-                                <ColumnDefinition Width="27"></ColumnDefinition>
+                                <ColumnDefinition Width="60"></ColumnDefinition>
+                                <ColumnDefinition Width="30"></ColumnDefinition>
                                 <ColumnDefinition Width="50"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition></RowDefinition>
                             </Grid.RowDefinitions>
-                            <Grid VerticalAlignment="Center" Grid.Column="4">
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Row="0" Grid.Column="2">
+                                <Menu Name="ToDoElementMenu">
+                                    <MenuItem Header="...">
+                                        <MenuItem  Header="Add child below [alt+b]" Click="MenuItem_AddChildBelow"></MenuItem>
+                                        <MenuItem  Header="Add sibling below [alt+n]"></MenuItem>
+                                        <MenuItem  Header="&lt;&lt;&lt; [alt+&lt;]"></MenuItem>
+                                        <MenuItem  Header="&gt;&gt;&gt; [alt+&gt;]"></MenuItem>
+                                        <MenuItem  Header="Delete [alt+del]"></MenuItem>
+                                    </MenuItem>
+                                </Menu>
+                                <!--<Button Name="DeleteButton" VerticalAlignment="Center" HorizontalAlignment="Center" Click="DeleteButton_Click">
+                                    <Path VerticalAlignment="Center" HorizontalAlignment="Center" Stroke="Black" StrokeThickness="1.5">
+                                        <Path.RenderTransform>
+                                            <TransformGroup>
+                                                <RotateTransform Angle="180" CenterX="15" CenterY="13.5"/>
+                                            </TransformGroup>
+                                        </Path.RenderTransform>
+                                        <Path.Style>
+                                            <Style TargetType="{x:Type Path}">
+                                                <Setter Property="Fill" Value="LightGray"></Setter>
+                                                <Setter Property="Stroke" Value="Black"></Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ElementName=DeleteButton, Path=IsMouseOver}" Value="True">
+                                                        <Setter Property="Fill" Value="Red"></Setter>
+                                                        <Setter Property="Stroke" Value="DarkRed"></Setter>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ElementName=DeleteButton, Path=IsMouseOver}" Value="False">
+                                                        <Setter Property="Fill" Value="LightGray"></Setter>
+                                                        <Setter Property="Stroke" Value="Black"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Path.Style>
+                                        <Path.Data>
+                                            <PathGeometry Figures="M7,0 L3,20 L27,20 L23,0 M3,20 L1,20 L2,23 L28,23 L29,20 L27,20 M10,23 L13,26 L17,26 L20,23 M11,0 L9,18 M19,0 L21,18 M15,0 L15,18">
+                                            </PathGeometry>
+                                        </Path.Data>
+                                    </Path>
+                                </Button>-->
+                            </StackPanel>
+                            <Grid VerticalAlignment="Center" Grid.Column="4" Grid.Row="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition></ColumnDefinition>
                                 </Grid.ColumnDefinitions>

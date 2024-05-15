@@ -241,5 +241,11 @@ namespace TodoLists.Utils
             ToDoElement newElement = this._finalMutators.AddNewChildToElement(ele);
             return newElement;
         }
+
+        public ToDoElement AddSibling(ToDoElement ele)
+        {
+            var eleData = this._treeSearcher.GetIndexAndParentCollectionFromElement(ele);
+            return this._finalMutators.AddNewChildToElement(eleData.Parent, eleData.Index + 1, eleData.ParentList);
+        }
     }
 }

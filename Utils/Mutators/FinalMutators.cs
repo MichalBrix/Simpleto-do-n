@@ -53,11 +53,18 @@ namespace TodoLists.Utils.Mutators
             parentCollection.Remove(element);
         }
 
-        public ToDoElement AddNewChildToElement( ToDoElement element)
+        public ToDoElement AddNewChildToElement( ToDoElement parent)
         {
             var newEle = new ToDoElement();
-            element.Children.Add(newEle);
+            parent.Children.Add(newEle);
 
+            return newEle;
+        }
+
+        public ToDoElement AddNewChildToElement(ToDoElement parent, int index, ObservableCollection<ToDoElement> list)
+        {
+            var newEle = new ToDoElement();
+            list.Insert(index, newEle);
             return newEle;
         }
     }

@@ -136,14 +136,24 @@ namespace TodoLists
 
                 e.Handled = true;
             }
-            else if (e.SystemKey == Key.B && Keyboard.Modifiers == ModifierKeys.Alt)
+            else if ((e.SystemKey == Key.B && Keyboard.Modifiers == ModifierKeys.Alt)
+                    || (e.SystemKey == Key.Enter && Keyboard.Modifiers == ModifierKeys.Alt))
             {
                 if (this.CurrentlyFocusedElement != null)
                 {
-                    this.Action_AddChildBelow(this.CurrentlyFocusedElement);                 
+                    this.Action_AddChildBelow(this.CurrentlyFocusedElement);
                 }
 
                 e.Handled = true;
+            }
+            else if ((e.SystemKey == Key.N && Keyboard.Modifiers == ModifierKeys.Alt)
+                    || (e.Key == Key.Enter))
+            {
+                if (this.CurrentlyFocusedElement != null)
+                {
+                    this.Action_AddSibling(this.CurrentlyFocusedElement);
+                }
+                e.Handled= true;
             }
         }
 
@@ -250,6 +260,19 @@ namespace TodoLists
         private void FocusOnElement(ToDoElement ele)
         {
             this.Dispatcher.Invoke(() => { ele.IsTextBoxFocused = true; }, DispatcherPriority.Input);
+        }
+
+        private void MenuItem_AddSibling(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            var ele = menuItem.DataContext as ToDoElement;
+            this.Action_AddSibling(ele);
+        }
+
+        private void Action_AddSibling(ToDoElement element)
+        {
+            var newElement = this.TreeViewMutator.AddSibling(element);
+            this.FocusOnElement(newElement);
         }
     }
 }

@@ -140,7 +140,7 @@
                                 <Menu Name="ToDoElementMenu">
                                     <MenuItem Header="...">
                                         <MenuItem  Header="Add child below [alt+b]" Click="MenuItem_AddChildBelow"></MenuItem>
-                                        <MenuItem  Header="Add sibling below [alt+n]"></MenuItem>
+                                        <MenuItem  Header="Add sibling below [alt+n]" Click="MenuItem_AddSibling"></MenuItem>
                                         <MenuItem  Header="&lt;&lt;&lt; [alt+&lt;]"></MenuItem>
                                         <MenuItem  Header="&gt;&gt;&gt; [alt+&gt;]"></MenuItem>
                                         <MenuItem  Header="Delete [alt+del]"></MenuItem>

@@ -141,8 +141,8 @@
                                     <MenuItem Header="...">
                                         <MenuItem  Header="Add child below [alt+b]" Click="MenuItem_AddChildBelow"></MenuItem>
                                         <MenuItem  Header="Add sibling below [alt+n]" Click="MenuItem_AddSibling"></MenuItem>
-                                        <MenuItem  Header="&lt;&lt;&lt; [alt+&lt;]"></MenuItem>
-                                        <MenuItem  Header="&gt;&gt;&gt; [alt+&gt;]"></MenuItem>
+                                        <MenuItem  Header="&lt;&lt;&lt; [alt+&lt;]" Click="MenuItem_MoveLeft"></MenuItem>
+                                        <MenuItem  Header="&gt;&gt;&gt; [alt+&gt;]" Click="MenuItem_MoveRight"></MenuItem>
                                         <MenuItem  Header="Delete [alt+del]"></MenuItem>
                                     </MenuItem>
                                 </Menu>

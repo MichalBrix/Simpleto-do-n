@@ -247,5 +247,22 @@ namespace TodoLists.Utils
             var eleData = this._treeSearcher.GetIndexAndParentCollectionFromElement(ele);
             return this._finalMutators.AddNewChildToElement(eleData.Parent, eleData.Index + 1, eleData.ParentList);
         }
+
+        public void MoveAsParentSiblingBelow(ToDoElement ele, ToDoElement sibling)
+        {
+            var eleData = this._treeSearcher.GetIndexAndParentCollectionFromElement(ele);
+            var siblingData = this._treeSearcher.GetIndexAndParentCollectionFromElement(sibling);
+            this._finalMutators.RebaseOnIndex(ele, siblingData.Index+1, siblingData.ParentList, eleData.ParentList);
+        }
+
+        public void MoveAsChildOfAbove(ToDoElement ele, int index, ToDoElement parent, ObservableCollection<ToDoElement> parentChildren)
+        {
+            if (index > 0)
+            {
+                var newParent = parentChildren[index - 1];
+                this._finalMutators.RebaseAsLast(ele, newParent.Children, parentChildren);
+                newParent.IsExpanded = true;
+            }
+        }
     }
 }

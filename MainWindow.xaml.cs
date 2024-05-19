@@ -153,7 +153,23 @@ namespace TodoLists
                 {
                     this.Action_AddSibling(this.CurrentlyFocusedElement);
                 }
-                e.Handled= true;
+                e.Handled = true;
+            }
+            else if (e.SystemKey == Key.OemComma && Keyboard.Modifiers == ModifierKeys.Alt)
+            {
+                if (this.CurrentlyFocusedElement != null)
+                {
+                    this.Action_MoveLeft(this.CurrentlyFocusedElement);
+                }
+                e.Handled = true;
+            }
+            else if (e.SystemKey == Key.OemPeriod && Keyboard.Modifiers == ModifierKeys.Alt)
+            {
+                if (this.CurrentlyFocusedElement != null)
+                {
+                    this.Action_MoveRight(this.CurrentlyFocusedElement);
+                }
+                e.Handled = true;
             }
         }
 
@@ -273,6 +289,41 @@ namespace TodoLists
         {
             var newElement = this.TreeViewMutator.AddSibling(element);
             this.FocusOnElement(newElement);
+        }
+
+        private void MenuItem_MoveLeft(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            var ele = menuItem.DataContext as ToDoElement;
+            this.Action_MoveLeft(ele);
+        }
+
+        private void MenuItem_MoveRight(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            var ele = menuItem.DataContext as ToDoElement;
+            this.Action_MoveRight(ele);
+        }
+
+        private void Action_MoveLeft(ToDoElement ele)
+        {
+            var parent = this.TreeSearcher.FindParent(ele);
+            if (parent != null) {
+                this.TreeViewMutator.MoveAsParentSiblingBelow(ele, parent);
+                this.FocusOnElement(ele);
+            }
+            
+        }
+
+        private void Action_MoveRight(ToDoElement ele)
+        {
+            var eleData = this.TreeSearcher.GetIndexAndParentCollectionFromElement(ele);
+            if (eleData.Index > 0)
+            {
+                this.TreeViewMutator.MoveAsChildOfAbove(ele, eleData.Index, eleData.Parent, eleData.ParentList);
+                this.FocusOnElement(ele);
+            }
+
         }
     }
 }

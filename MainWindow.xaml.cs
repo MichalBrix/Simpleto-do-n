@@ -171,6 +171,22 @@ namespace TodoLists
                 }
                 e.Handled = true;
             }
+            else if (e.SystemKey == Key.W && Keyboard.Modifiers == ModifierKeys.Alt)
+            {
+                if (this.CurrentlyFocusedElement != null)
+                {
+                    this.Action_MarkWorkInProgress(this.CurrentlyFocusedElement);
+                }
+                e.Handled = true;
+            }
+            else if (e.SystemKey == Key.F && Keyboard.Modifiers == ModifierKeys.Alt)
+            {
+                if (this.CurrentlyFocusedElement != null)
+                {
+                    this.Action_MarkFinished(this.CurrentlyFocusedElement);
+                }
+                e.Handled = true;
+            }
         }
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
@@ -324,6 +340,42 @@ namespace TodoLists
                 this.FocusOnElement(ele);
             }
 
+        }
+
+        private void MenuItem_MarkWorkInProgress(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            var ele = menuItem.DataContext as ToDoElement;
+            this.Action_MarkWorkInProgress(ele);
+        }
+
+        private void Action_MarkWorkInProgress(ToDoElement ele)
+        {
+            this.TreeViewMutator.ChangeStatus(ele, true, false);
+        }
+
+        private void MenuItem_MarkFinished(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            var ele = menuItem.DataContext as ToDoElement;
+            this.Action_MarkFinished(ele);
+        }
+
+        private void Action_MarkFinished(ToDoElement ele)
+        {
+            this.TreeViewMutator.ChangeStatus(ele, false, true);
+        }
+
+        private void MenuItem_ClearMarking(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            var ele = menuItem.DataContext as ToDoElement;
+            this.Action_ClearMarking(ele);
+        }
+
+        private void Action_ClearMarking(ToDoElement ele)
+        {
+            this.TreeViewMutator.ChangeStatus(ele, false, false);
         }
     }
 }

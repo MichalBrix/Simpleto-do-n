@@ -126,6 +126,25 @@
                 <HierarchicalDataTemplate DataType="{x:Type localData:ToDoElement}" ItemsSource="{Binding Path=Children}">
                     <Border BorderBrush="LightGray" BorderThickness=" 0 0.7 0 0.7">
                         <Grid HorizontalAlignment="Stretch" MinWidth="400">
+                            <Grid.Style>
+                            <Style TargetType="{x:Type Grid}">
+                                <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding Path=IsInProgress, Mode=OneWay}" Value="False"></Condition>
+                                                <Condition Binding="{Binding Path=IsFinished, Mode=OneWay}" Value="False"></Condition>
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Background" Value="White"></Setter>
+                                        </MultiDataTrigger>
+                                        <DataTrigger Binding="{Binding Path=IsInProgress, Mode=OneWay}" Value="True">
+                                        <Setter Property="Background" Value="Khaki"></Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=IsFinished, Mode=OneWay}" Value="True">
+                                        <Setter Property="Background" Value="GreenYellow"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                            </Grid.Style>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                                 <ColumnDefinition Width="10"></ColumnDefinition>
@@ -144,6 +163,10 @@
                                         <MenuItem  Header="&lt;&lt;&lt; [alt+&lt;]" Click="MenuItem_MoveLeft"></MenuItem>
                                         <MenuItem  Header="&gt;&gt;&gt; [alt+&gt;]" Click="MenuItem_MoveRight"></MenuItem>
                                         <MenuItem  Header="Delete [alt+del]"></MenuItem>
+                                        <!--Need to change those from alt to ctrl - alt + letters may end up with language specific letters-->
+                                        <MenuItem  Header="Mark as work in progress [alt+w]" Click="MenuItem_MarkWorkInProgress"></MenuItem>
+                                        <MenuItem  Header="Mark as done [alt+d]" Click="MenuItem_MarkFinished"></MenuItem>
+                                        <MenuItem  Header="Clear marking [alt+c]" Click="MenuItem_ClearMarking"></MenuItem>
                                     </MenuItem>
                                 </Menu>
                                 <!--<Button Name="DeleteButton" VerticalAlignment="Center" HorizontalAlignment="Center" Click="DeleteButton_Click">
@@ -249,15 +272,25 @@
                                     </Ellipse.Style>
                                 </Ellipse>
                             </Canvas>
-                            <TextBox Name="ToDoTextbox" local:FocusExtension.IsFocused="{Binding Path=IsTextBoxFocused, Mode=TwoWay}" Grid.Column="0" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" PreviewKeyDown="TextBox_PreviewKeyDown" BorderBrush="White" Text="{Binding Path=Description, Mode=TwoWay}" AcceptsReturn="True" SpellCheck.IsEnabled="True">
+                            <TextBox Name="ToDoTextbox" local:FocusExtension.IsFocused="{Binding Path=IsTextBoxFocused, Mode=TwoWay}" Grid.Column="0" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" PreviewKeyDown="TextBox_PreviewKeyDown" Text="{Binding Path=Description, Mode=TwoWay}" AcceptsReturn="True" SpellCheck.IsEnabled="True">
                                 <TextBox.Style>
                                     <Style TargetType="{x:Type TextBox}">
                                         <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding Path=IsInProgress, Mode=OneWay}" Value="False"></Condition>
+                                                    <Condition Binding="{Binding Path=IsFinished, Mode=OneWay}" Value="False"></Condition>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="BorderBrush" Value="White"></Setter>
+                                                <Setter Property="Background" Value="White"></Setter>
+                                            </MultiDataTrigger>
                                             <DataTrigger Binding="{Binding Path=IsInProgress, Mode=OneWay}" Value="True">
                                                 <Setter Property="Background" Value="Khaki"></Setter>
+                                                <Setter Property="BorderBrush" Value="Khaki"></Setter>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Path=IsFinished, Mode=OneWay}" Value="True">
                                                 <Setter Property="Background" Value="GreenYellow"></Setter>
+                                                <Setter Property="BorderBrush" Value="GreenYellow"></Setter>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>

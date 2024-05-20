@@ -67,5 +67,11 @@ namespace TodoLists.Utils.Mutators
             list.Insert(index, newEle);
             return newEle;
         }
+
+        public void ChangeStatus(ToDoElement element, bool isWorkInProgress, bool isFinished)
+        {
+            element.IsFinished = isFinished;
+            element.IsInProgress = isWorkInProgress;
+        }
     }
 }

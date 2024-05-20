@@ -264,5 +264,10 @@ namespace TodoLists.Utils
                 newParent.IsExpanded = true;
             }
         }
+
+        public void ChangeStatus(ToDoElement ele, bool isWorkInProgress, bool isDone)
+        {
+            this._finalMutators.ChangeStatus(ele, isWorkInProgress, isDone);
+        }
     }
 }

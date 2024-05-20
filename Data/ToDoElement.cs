@@ -2,11 +2,8 @@
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
-
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
@@ -17,9 +14,13 @@ namespace TodoLists.Data
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public Guid ID { get; set; } = Guid.NewGuid();
-        public string Description { get; set; }
-        public bool IsInProgress { get; set; }
-        public bool IsFinished { get; set; }
+        private string _description;
+        public string Description { get { return _description; } set { _description = value; RefreshState(); OnPropertyChanged(); } }
+
+        private bool _isInProgress;
+        private bool _isFinished;
+        public bool IsInProgress { get { return _isInProgress;  } set { _isInProgress = value; OnPropertyChanged(); } }
+        public bool IsFinished { get { return _isFinished; } set { _isFinished = value; OnPropertyChanged(); } }
 
         private bool _isExpanded;
         public bool IsExpanded { get { return _isExpanded; }  set { _isExpanded = value; OnPropertyChanged(); } }
@@ -34,6 +35,64 @@ namespace TodoLists.Data
         public DateTime? Finished { get; set; }
 
         public ObservableCollection<ToDoElement> Children { get; set; } = new ObservableCollection<ToDoElement>();
+
+        private void RefreshState()
+        {
+            string descriptionLowered = this._description.ToLowerInvariant();
+            IEnumerable<char> filtered = descriptionLowered.ToCharArray().Where(x => x=='_' || Char.IsAsciiLetter(x) );
+            var ready = new string(filtered.ToArray());
+
+            bool startsWithDone = ready.StartsWith("done");
+            bool endsWithDone = ready.EndsWith("done");
+
+            bool startsWithWIP = ready.StartsWith("wip");
+            bool endsWithWIP = ready.EndsWith("wip");
+
+            if (startsWithDone || endsWithDone)
+            {
+                this.IsFinished = true;
+                this.IsInProgress = false;
+            }
+            else if (startsWithWIP || endsWithWIP)
+            {
+                this.IsInProgress = true;
+                this.IsFinished = false;
+            }
+
+            if (startsWithDone || endsWithDone || startsWithWIP || endsWithWIP)
+            {
+                int whereToStartDeleting = 0;
+                int howMuchToDelete = 0;
+
+                if (startsWithDone || startsWithWIP)
+                {
+                    if (startsWithDone) howMuchToDelete = descriptionLowered.IndexOf("done") + 3;
+                    else if (startsWithWIP) howMuchToDelete = descriptionLowered.IndexOf("wip") + 2;
+                    char c;
+                    do
+                    {
+                        howMuchToDelete++;
+                        c = descriptionLowered[howMuchToDelete];
+                    }
+                    while (!Char.IsLetterOrDigit(c));
+                    this._description = this._description.Remove(0, howMuchToDelete);
+                }
+                if (endsWithDone || endsWithWIP)
+                {
+                    if (endsWithDone) whereToStartDeleting = descriptionLowered.LastIndexOf("done");
+                    else if (endsWithWIP) whereToStartDeleting = descriptionLowered.LastIndexOf("wip");
+                    
+                    
+                    howMuchToDelete = this._description.Length - whereToStartDeleting;
+                    if (howMuchToDelete < 5)
+                    {
+                        this._description = this._description.Remove(whereToStartDeleting, howMuchToDelete);
+                    }
+                }
+            }
+            
+            
+        }
 
         public ToDoElement GetParentOfElement(ToDoElement element)
         {

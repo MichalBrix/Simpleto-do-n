@@ -249,7 +249,20 @@
                                     </Ellipse.Style>
                                 </Ellipse>
                             </Canvas>
-                            <TextBox local:FocusExtension.IsFocused="{Binding Path=IsTextBoxFocused, Mode=TwoWay}" Grid.Column="0" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" PreviewKeyDown="TextBox_PreviewKeyDown" BorderBrush="White" Text="{Binding Path=Description, Mode=TwoWay}" AcceptsReturn="True" SpellCheck.IsEnabled="True"></TextBox>
+                            <TextBox Name="ToDoTextbox" local:FocusExtension.IsFocused="{Binding Path=IsTextBoxFocused, Mode=TwoWay}" Grid.Column="0" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" PreviewKeyDown="TextBox_PreviewKeyDown" BorderBrush="White" Text="{Binding Path=Description, Mode=TwoWay}" AcceptsReturn="True" SpellCheck.IsEnabled="True">
+                                <TextBox.Style>
+                                    <Style TargetType="{x:Type TextBox}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=IsInProgress, Mode=OneWay}" Value="True">
+                                                <Setter Property="Background" Value="Khaki"></Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Path=IsFinished, Mode=OneWay}" Value="True">
+                                                <Setter Property="Background" Value="GreenYellow"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
                             <!--<TextBox Grid.Column="0" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" PreviewKeyDown="TextBox_PreviewKeyDown" BorderBrush="White" Text="{Binding Path=Description, Mode=TwoWay}" AcceptsReturn="True" SpellCheck.IsEnabled="True"></TextBox>-->
 
                         </Grid>

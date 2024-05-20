@@ -10,20 +10,34 @@ using System.Windows.Media.Animation;
 
 namespace TodoLists.Data
 {
-    public class ToDoElement: INotifyPropertyChanged
+    public class ToDoElement : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        
         public Guid ID { get; set; } = Guid.NewGuid();
+
+
         private string _description;
-        public string Description { get { return _description; } set { _description = value; RefreshState(); OnPropertyChanged(); } }
+        public string PreviousDescription { get; set; }
+        public string Description
+        {
+            get { return _description; }
+            set
+            {
+                PreviousDescription = Description;
+                _description = value; 
+                RefreshState(); 
+                OnPropertyChanged();
+            }
+        }
 
         private bool _isInProgress;
         private bool _isFinished;
-        public bool IsInProgress { get { return _isInProgress;  } set { _isInProgress = value; OnPropertyChanged(); } }
+        public bool IsInProgress { get { return _isInProgress; } set { _isInProgress = value; OnPropertyChanged(); } }
         public bool IsFinished { get { return _isFinished; } set { _isFinished = value; OnPropertyChanged(); } }
 
         private bool _isExpanded;
-        public bool IsExpanded { get { return _isExpanded; }  set { _isExpanded = value; OnPropertyChanged(); } }
+        public bool IsExpanded { get { return _isExpanded; } set { _isExpanded = value; OnPropertyChanged(); } }
 
         private bool _isSelected;
         public bool IsSelected { get { return _isSelected; } set { _isSelected = value; OnPropertyChanged(); } }
@@ -39,7 +53,7 @@ namespace TodoLists.Data
         private void RefreshState()
         {
             string descriptionLowered = this._description.ToLowerInvariant();
-            IEnumerable<char> filtered = descriptionLowered.ToCharArray().Where(x => x=='_' || Char.IsAsciiLetter(x) );
+            IEnumerable<char> filtered = descriptionLowered.ToCharArray().Where(x => x == '_' || Char.IsAsciiLetter(x));
             var ready = new string(filtered.ToArray());
 
             bool startsWithDone = ready.StartsWith("done");
@@ -81,8 +95,8 @@ namespace TodoLists.Data
                 {
                     if (endsWithDone) whereToStartDeleting = descriptionLowered.LastIndexOf("done");
                     else if (endsWithWIP) whereToStartDeleting = descriptionLowered.LastIndexOf("wip");
-                    
-                    
+
+
                     howMuchToDelete = this._description.Length - whereToStartDeleting;
                     if (howMuchToDelete < 5)
                     {
@@ -90,8 +104,8 @@ namespace TodoLists.Data
                     }
                 }
             }
-            
-            
+
+
         }
 
         public ToDoElement GetParentOfElement(ToDoElement element)
@@ -116,7 +130,8 @@ namespace TodoLists.Data
 
         public int GetIndexOf(ToDoElement child)
         {
-            for (int i = 0; i < this.Children.Count; i++) {
+            for (int i = 0; i < this.Children.Count; i++)
+            {
                 if (this.Children[i] == child)
                 {
                     return i;

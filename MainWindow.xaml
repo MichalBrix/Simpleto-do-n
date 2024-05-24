@@ -148,14 +148,19 @@
                             </Grid.Style>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="10"></ColumnDefinition>
-                                <ColumnDefinition Width="60"></ColumnDefinition>
+                                <ColumnDefinition Width="45"></ColumnDefinition>
+                                <ColumnDefinition Width="30"></ColumnDefinition>
                                 <ColumnDefinition Width="30"></ColumnDefinition>
                                 <ColumnDefinition Width="50"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition></RowDefinition>
                             </Grid.RowDefinitions>
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1">
+                                <TextBlock FontSize="8" Text="{Binding Path=OpenElementsNo, StringFormat=Open: {0}}"></TextBlock>
+                                <TextBlock FontSize="8" Text="{Binding Path=InProgressElementsNo, StringFormat=WIP:  {0}}"></TextBlock>
+                                <TextBlock FontSize="8" Text="{Binding Path=FinishedElementsNo, StringFormat=Done: {0}}"></TextBlock>
+                            </StackPanel>
                             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Row="0" Grid.Column="2">
                                 <Menu Name="ToDoElementMenu">
                                     <MenuItem Header="...">
@@ -268,8 +273,6 @@
                                     </Style>
                                 </TextBox.Style>
                             </TextBox>
-                            <!--<TextBox Grid.Column="0" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" PreviewKeyDown="TextBox_PreviewKeyDown" BorderBrush="White" Text="{Binding Path=Description, Mode=TwoWay}" AcceptsReturn="True" SpellCheck.IsEnabled="True"></TextBox>-->
-
                         </Grid>
                     </Border>
                 </HierarchicalDataTemplate>

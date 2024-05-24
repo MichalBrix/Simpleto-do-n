@@ -45,6 +45,14 @@ namespace TodoLists.Data
         private bool _isTextBoxFocused;
         public bool IsTextBoxFocused { get { return _isTextBoxFocused; } set { _isTextBoxFocused = value; OnPropertyChanged(); } }
 
+        private int _opentElementsNo;
+        private int _inProgressElementsNo;
+        private int _finishedElementsNo;
+
+        public int OpenElementsNo { get { return _opentElementsNo; } set { _opentElementsNo = value; OnPropertyChanged(); } }
+        public int InProgressElementsNo { get { return _inProgressElementsNo; } set { _inProgressElementsNo = value; OnPropertyChanged(); } }
+        public int FinishedElementsNo { get { return _finishedElementsNo; } set { _finishedElementsNo = value; OnPropertyChanged(); } }
+
         public DateTime? Started { get; set; }
         public DateTime? Finished { get; set; }
 

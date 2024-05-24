@@ -29,6 +29,7 @@ namespace TodoLists
     public partial class MainWindow : Window
     {
         private ToDoElement CurrentlyFocusedElement = null;
+        private ElementCounter Counter;
         private TreeSearcher TreeSearcher;
         private TreeViewMutator TreeViewMutator;
         public ObservableCollection<Data.ToDoElement> ToDoElements { get; set; }
@@ -41,6 +42,8 @@ namespace TodoLists
             {
                 this.ToDoElements.Add(MakeToDoElement(0));
             }
+            
+            
 
             InitializeComponent();
 
@@ -49,7 +52,8 @@ namespace TodoLists
             this.ToDoTree.ItemsSource = this.ToDoElements;
             this.TreeSearcher = new TreeSearcher(this.ToDoElements);
             this.TreeViewMutator = new TreeViewMutator(this.TreeSearcher, this.ToDoTree, this.ToDoElements);
-            
+            this.Counter = new ElementCounter(this.ToDoElements, this.TreeSearcher);
+            this.Counter.RecalculateElements();
         }
 
         private int counter = 0;
@@ -233,14 +237,20 @@ namespace TodoLists
         {
             var button = sender as Button;
             var element = button.DataContext as ToDoElement;
+            var parent = this.TreeSearcher.FindParent(element);
             this.TreeViewMutator.MoveElementUp(element);
+            this.Counter.CalculateElementUp(parent);
+            this.Counter.CalculateParentUp(element);
         }
 
         private void ArrowDownButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
             var element = button.DataContext as ToDoElement;
+            var parent = this.TreeSearcher.FindParent(element);
             this.TreeViewMutator.MoveElementDown(element);
+            this.Counter.CalculateElementUp(parent);
+            this.Counter.CalculateParentUp(element);
         }
 
         private void Ellipse_MouseMove(object sender, MouseEventArgs e)
@@ -264,7 +274,10 @@ namespace TodoLists
                 var element = this.TreeSearcher.GetElementByGuid(dropString);
                 if (element != null)
                 {
+                    var parent = this.TreeSearcher.FindParent(element);
                     this.TreeViewMutator.DropElementDown(context, element);
+                    this.Counter.CalculateElementUp(parent);
+                    this.Counter.CalculateParentUp(element);
                 }
             }
             
@@ -282,7 +295,10 @@ namespace TodoLists
                 var element = this.TreeSearcher.GetElementByGuid(dropString);
                 if (element != null)
                 {
+                    var parent = this.TreeSearcher.FindParent(element);
                     this.TreeViewMutator.DropElementUp(context, element);
+                    this.Counter.CalculateElementUp(parent);
+                    this.Counter.CalculateParentUp(element);
                 }
             }
 
@@ -309,6 +325,7 @@ namespace TodoLists
         {
             this.TreeViewMutator.ExpandElement(parent);
             var newEle = this.TreeViewMutator.AddChildToElement(parent);
+            this.Counter.CalculateElementUp(parent);
             this.FocusOnElement(newEle);
         }
 
@@ -327,6 +344,7 @@ namespace TodoLists
         private void Action_AddSibling(ToDoElement element)
         {
             var newElement = this.TreeViewMutator.AddSibling(element);
+            this.Counter.CalculateParentUp(element);
             this.FocusOnElement(newElement);
         }
 
@@ -349,6 +367,8 @@ namespace TodoLists
             var parent = this.TreeSearcher.FindParent(ele);
             if (parent != null) {
                 this.TreeViewMutator.MoveAsParentSiblingBelow(ele, parent);
+                this.Counter.CalculateElementUp(ele);
+                this.Counter.CalculateElementUp(parent);
                 this.FocusOnElement(ele);
             }
             
@@ -360,9 +380,10 @@ namespace TodoLists
             if (eleData.Index > 0)
             {
                 this.TreeViewMutator.MoveAsChildOfAbove(ele, eleData.Index, eleData.Parent, eleData.ParentList);
+                this.Counter.CalculateElementUp(ele);
+                this.Counter.CalculateElementUp(eleData.Parent);
                 this.FocusOnElement(ele);
             }
-
         }
 
         private void MenuItem_MarkWorkInProgress(object sender, RoutedEventArgs e)
@@ -375,6 +396,7 @@ namespace TodoLists
         private void Action_MarkWorkInProgress(ToDoElement ele)
         {
             this.TreeViewMutator.ChangeStatus(ele, true, false);
+            this.Counter.CalculateParentUp(ele);
         }
 
         private void MenuItem_MarkFinished(object sender, RoutedEventArgs e)
@@ -387,6 +409,7 @@ namespace TodoLists
         private void Action_MarkFinished(ToDoElement ele)
         {
             this.TreeViewMutator.ChangeStatus(ele, false, true);
+            this.Counter.CalculateParentUp(ele);
         }
 
         private void MenuItem_ClearMarking(object sender, RoutedEventArgs e)
@@ -399,6 +422,7 @@ namespace TodoLists
         private void Action_ClearMarking(ToDoElement ele)
         {
             this.TreeViewMutator.ChangeStatus(ele, false, false);
+            this.Counter.CalculateParentUp(ele);
         }
 
         private void MenuItem_Delete(object sender, RoutedEventArgs e)
@@ -410,7 +434,12 @@ namespace TodoLists
 
         private void Action_Delete(ToDoElement ele)
         {
+            var parent = this.TreeSearcher.FindParent(ele);
             this.TreeViewMutator.DeleteElement(ele);
+            if (parent != null)
+            {
+                this.Counter.CalculateElementUp(parent);
+            }
         }
     }
 }

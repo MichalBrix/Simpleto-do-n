@@ -171,7 +171,7 @@ namespace TodoLists
                 }
                 e.Handled = true;
             }
-            else if (e.SystemKey == Key.W && Keyboard.Modifiers == ModifierKeys.Alt)
+            else if (e.Key == Key.W && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 if (this.CurrentlyFocusedElement != null)
                 {
@@ -179,13 +179,43 @@ namespace TodoLists
                 }
                 e.Handled = true;
             }
-            else if (e.SystemKey == Key.F && Keyboard.Modifiers == ModifierKeys.Alt)
+            else if (e.Key == Key.F && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 if (this.CurrentlyFocusedElement != null)
                 {
                     this.Action_MarkFinished(this.CurrentlyFocusedElement);
                 }
                 e.Handled = true;
+            }
+            else if (e.Key == Key.E && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (this.CurrentlyFocusedElement != null)
+                {
+                    this.Action_ClearMarking(this.CurrentlyFocusedElement);
+                }
+                e.Handled = true;
+            }
+            else if (e.SystemKey == Key.Delete && Keyboard.Modifiers == ModifierKeys.Alt)
+            {
+                if (this.CurrentlyFocusedElement != null)
+                {
+                    this.Action_Delete(this.CurrentlyFocusedElement);
+                }
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Tab)
+            {
+                if (this.CurrentlyFocusedElement != null)
+                {
+                    if (Keyboard.Modifiers == ModifierKeys.Shift)
+                    {
+                        this.TreeViewMutator.SelectElementUp(this.CurrentlyFocusedElement);
+                    }
+                    else
+                    {
+                        this.TreeViewMutator.SelectElementDown(this.CurrentlyFocusedElement);
+                    }
+                }
             }
         }
 
@@ -257,13 +287,6 @@ namespace TodoLists
             }
 
             return;
-        }
-
-        private void DeleteButton_Click(object sender, RoutedEventArgs e)
-        {
-            var button = sender as Button;
-            var context = button.DataContext as ToDoElement;
-            this.TreeViewMutator.DeleteElement(context);
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -376,6 +399,18 @@ namespace TodoLists
         private void Action_ClearMarking(ToDoElement ele)
         {
             this.TreeViewMutator.ChangeStatus(ele, false, false);
+        }
+
+        private void MenuItem_Delete(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            var ele = menuItem.DataContext as ToDoElement;
+            this.Action_Delete(ele);
+        }
+
+        private void Action_Delete(ToDoElement ele)
+        {
+            this.TreeViewMutator.DeleteElement(ele);
         }
     }
 }

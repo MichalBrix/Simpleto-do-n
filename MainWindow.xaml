@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TodoLists"
+        xmlns:misc="clr-namespace:TodoLists.Misc"
         xmlns:localData="clr-namespace:TodoLists.Data"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" PreviewKeyDown="Window_PreviewKeyDown">
@@ -162,42 +163,13 @@
                                         <MenuItem  Header="Add sibling below [alt+n]" Click="MenuItem_AddSibling"></MenuItem>
                                         <MenuItem  Header="&lt;&lt;&lt; [alt+&lt;]" Click="MenuItem_MoveLeft"></MenuItem>
                                         <MenuItem  Header="&gt;&gt;&gt; [alt+&gt;]" Click="MenuItem_MoveRight"></MenuItem>
-                                        <MenuItem  Header="Delete [alt+del]"></MenuItem>
+                                        <MenuItem  Header="Delete [alt+del]" Click="MenuItem_Delete"></MenuItem>
                                         <!--Need to change those from alt to ctrl - alt + letters may end up with language specific letters-->
-                                        <MenuItem  Header="Mark as work in progress [alt+w]" Click="MenuItem_MarkWorkInProgress"></MenuItem>
-                                        <MenuItem  Header="Mark as done [alt+d]" Click="MenuItem_MarkFinished"></MenuItem>
-                                        <MenuItem  Header="Clear marking [alt+c]" Click="MenuItem_ClearMarking"></MenuItem>
+                                        <MenuItem  Header="Mark as work in progress [ctrl+w]" Click="MenuItem_MarkWorkInProgress"></MenuItem>
+                                        <MenuItem  Header="Mark as done [ctrl+d]" Click="MenuItem_MarkFinished"></MenuItem>
+                                        <MenuItem  Header="Clear marking [clrl+e]" Click="MenuItem_ClearMarking"></MenuItem>
                                     </MenuItem>
                                 </Menu>
-                                <!--<Button Name="DeleteButton" VerticalAlignment="Center" HorizontalAlignment="Center" Click="DeleteButton_Click">
-                                    <Path VerticalAlignment="Center" HorizontalAlignment="Center" Stroke="Black" StrokeThickness="1.5">
-                                        <Path.RenderTransform>
-                                            <TransformGroup>
-                                                <RotateTransform Angle="180" CenterX="15" CenterY="13.5"/>
-                                            </TransformGroup>
-                                        </Path.RenderTransform>
-                                        <Path.Style>
-                                            <Style TargetType="{x:Type Path}">
-                                                <Setter Property="Fill" Value="LightGray"></Setter>
-                                                <Setter Property="Stroke" Value="Black"></Setter>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ElementName=DeleteButton, Path=IsMouseOver}" Value="True">
-                                                        <Setter Property="Fill" Value="Red"></Setter>
-                                                        <Setter Property="Stroke" Value="DarkRed"></Setter>
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ElementName=DeleteButton, Path=IsMouseOver}" Value="False">
-                                                        <Setter Property="Fill" Value="LightGray"></Setter>
-                                                        <Setter Property="Stroke" Value="Black"></Setter>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Path.Style>
-                                        <Path.Data>
-                                            <PathGeometry Figures="M7,0 L3,20 L27,20 L23,0 M3,20 L1,20 L2,23 L28,23 L29,20 L27,20 M10,23 L13,26 L17,26 L20,23 M11,0 L9,18 M19,0 L21,18 M15,0 L15,18">
-                                            </PathGeometry>
-                                        </Path.Data>
-                                    </Path>
-                                </Button>-->
                             </StackPanel>
                             <Grid VerticalAlignment="Center" Grid.Column="4" Grid.Row="0">
                                 <Grid.ColumnDefinitions>
@@ -272,7 +244,7 @@
                                     </Ellipse.Style>
                                 </Ellipse>
                             </Canvas>
-                            <TextBox Name="ToDoTextbox" local:FocusExtension.IsFocused="{Binding Path=IsTextBoxFocused, Mode=TwoWay}" Grid.Column="0" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" PreviewKeyDown="TextBox_PreviewKeyDown" Text="{Binding Path=Description, Mode=TwoWay}" AcceptsReturn="True" SpellCheck.IsEnabled="True">
+                            <TextBox Name="ToDoTextbox" misc:FocusExtension.IsFocused="{Binding Path=IsTextBoxFocused, Mode=TwoWay}" Grid.Column="0" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" PreviewKeyDown="TextBox_PreviewKeyDown" Text="{Binding Path=Description, Mode=TwoWay}" AcceptsReturn="True" SpellCheck.IsEnabled="True">
                                 <TextBox.Style>
                                     <Style TargetType="{x:Type TextBox}">
                                         <Style.Triggers>

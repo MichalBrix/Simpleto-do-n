@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
 
-namespace TodoLists
+namespace TodoLists.Misc
 {
     public static class FocusExtension
     {

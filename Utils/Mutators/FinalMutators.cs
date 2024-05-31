@@ -61,7 +61,7 @@ namespace TodoLists.Utils.Mutators
             return newEle;
         }
 
-        public ToDoElement AddNewChildToElement(ToDoElement parent, int index, ObservableCollection<ToDoElement> list)
+        public ToDoElement AddNewChildToElement(ToDoElement? parent, int index, ObservableCollection<ToDoElement> list)
         {
             var newEle = new ToDoElement();
             list.Insert(index, newEle);

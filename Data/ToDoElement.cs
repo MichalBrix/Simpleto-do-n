@@ -12,29 +12,72 @@ namespace TodoLists.Data
 {
     public class ToDoElement : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        
+        public delegate void UndoRedoNeedToInclude(ToDoElement elementBefore, ToDoElement elementAfter);
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public event UndoRedoNeedToInclude? UndoRedoNeedToIncludeEvent;
+
         public Guid ID { get; set; } = Guid.NewGuid();
 
 
-        private string _description;
-        public string PreviousDescription { get; set; }
+        private string _description = "";
         public string Description
         {
             get { return _description; }
             set
             {
-                PreviousDescription = Description;
-                _description = value; 
-                RefreshState(); 
+                var undoRedoBefore = this.Clone(false);
+                _description = value;
+                RefreshState();
                 OnPropertyChanged();
+                UndoRedoNeedToIncludeEvent?.Invoke(undoRedoBefore, this.Clone(false));
             }
         }
 
         private bool _isInProgress;
         private bool _isFinished;
-        public bool IsInProgress { get { return _isInProgress; } set { _isInProgress = value; OnPropertyChanged(); } }
-        public bool IsFinished { get { return _isFinished; } set { _isFinished = value; OnPropertyChanged(); } }
+        public bool IsInProgress
+        {
+            get
+            { return _isInProgress; }
+            set
+            {
+                ToDoElement? before = null;
+                if (!this._suppressUndoRedo)
+                {
+                    before = this.Clone(false);
+                }
+                _isInProgress = value;
+                OnPropertyChanged();
+                if (!this._suppressUndoRedo)
+                {
+                    UndoRedoNeedToIncludeEvent?.Invoke(before!, this.Clone(false));
+                }
+
+            }
+        }
+        public bool IsFinished
+        {
+            get
+            {
+                return _isFinished;
+            }
+            set
+            {
+                ToDoElement? before = null;
+                if (!this._suppressUndoRedo)
+                {
+                    before = this.Clone(false);
+                }
+                _isFinished = value;
+                OnPropertyChanged();
+                if (!this._suppressUndoRedo)
+                {
+                    UndoRedoNeedToIncludeEvent?.Invoke(before!, this.Clone(false));
+                }
+            }
+        }
 
         private bool _isExpanded;
         public bool IsExpanded { get { return _isExpanded; } set { _isExpanded = value; OnPropertyChanged(); } }
@@ -58,6 +101,13 @@ namespace TodoLists.Data
 
         public ObservableCollection<ToDoElement> Children { get; set; } = new ObservableCollection<ToDoElement>();
 
+        public void ForceRefresh()
+        {
+            this.OnPropertyChanged();
+        }
+
+        private bool _suppressUndoRedo = false;
+
         private void RefreshState()
         {
             string descriptionLowered = this._description.ToLowerInvariant();
@@ -72,13 +122,17 @@ namespace TodoLists.Data
 
             if (startsWithDone || endsWithDone)
             {
+                this._suppressUndoRedo = true;
                 this.IsFinished = true;
                 this.IsInProgress = false;
+                this._suppressUndoRedo = false;
             }
             else if (startsWithWIP || endsWithWIP)
             {
+                this._suppressUndoRedo = true;
                 this.IsInProgress = true;
                 this.IsFinished = false;
+                this._suppressUndoRedo = false;
             }
 
             if (startsWithDone || endsWithDone || startsWithWIP || endsWithWIP)
@@ -112,11 +166,9 @@ namespace TodoLists.Data
                     }
                 }
             }
-
-
         }
 
-        public ToDoElement GetParentOfElement(ToDoElement element)
+        public ToDoElement? GetParentOfElement(ToDoElement element)
         {
             for (int i = 0; i < Children.Count; i++)
             {
@@ -149,7 +201,7 @@ namespace TodoLists.Data
             return -1;
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
@@ -169,6 +221,35 @@ namespace TodoLists.Data
                 }
             }
             return null;
+        }
+
+        public ToDoElement Clone(bool deepClone)
+        {
+            var clone = new ToDoElement()
+            {
+                ID = this.ID,
+                _description = this.Description,
+                _isInProgress = this.IsInProgress,
+                _isFinished = this.IsFinished,
+                _isExpanded = this.IsExpanded,
+                _isSelected = this.IsSelected,
+                IsTextBoxFocused = this.IsTextBoxFocused,
+                OpenElementsNo = this.OpenElementsNo,
+                InProgressElementsNo = this.InProgressElementsNo,
+                FinishedElementsNo = this.FinishedElementsNo,
+                Started = this.Started,
+                Finished = this.Finished
+            };
+
+            if (deepClone)
+            {
+                foreach (var c in this.Children)
+                {
+                    clone.Children.Add(c.Clone(true));
+                }
+            }
+
+            return clone;
         }
     }
 }

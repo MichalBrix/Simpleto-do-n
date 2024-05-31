@@ -42,7 +42,7 @@ namespace TodoLists.Utils
             element.IsExpanded = false;
         }
 
-        public void SelectElementDown(ToDoElement source, bool omitSourceExpandable = false, ToDoElement lastEle = null)
+        public void SelectElementDown(ToDoElement source, bool omitSourceExpandable = false, ToDoElement? lastEle = null)
         {
             if (source.IsExpanded == true && !omitSourceExpandable) { 
                 if (source.Children.Count > 0)
@@ -255,7 +255,7 @@ namespace TodoLists.Utils
             this._finalMutators.RebaseOnIndex(ele, siblingData.Index+1, siblingData.ParentList, eleData.ParentList);
         }
 
-        public void MoveAsChildOfAbove(ToDoElement ele, int index, ToDoElement parent, ObservableCollection<ToDoElement> parentChildren)
+        public void MoveAsChildOfAbove(ToDoElement ele, int index, ToDoElement? parent, ObservableCollection<ToDoElement> parentChildren)
         {
             if (index > 0)
             {

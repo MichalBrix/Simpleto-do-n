@@ -28,7 +28,7 @@ namespace TodoLists
     /// </summary>
     public partial class MainWindow : Window
     {
-        private ToDoElement CurrentlyFocusedElement = null;
+        private ToDoElement? CurrentlyFocusedElement = null;
         private ElementCounter Counter;
         private TreeSearcher TreeSearcher;
         private TreeViewMutator TreeViewMutator;
@@ -67,6 +67,7 @@ namespace TodoLists
             element.IsFinished = false;
             element.Started = null;
             element.Finished = null;
+            //element.UndoRedoNeedToIncludeEvent += RegisterUndoRedo;
             if (depth < 5)
             {
                 for (var i = 0; i < 4; i++)
@@ -225,7 +226,7 @@ namespace TodoLists
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            this.CurrentlyFocusedElement = ((sender as TextBox).Parent as Grid).DataContext as ToDoElement;
+            this.CurrentlyFocusedElement = (((sender as TextBox)!.Parent as Grid)!.DataContext as ToDoElement)!;
         }
 
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
@@ -233,10 +234,16 @@ namespace TodoLists
             this.CurrentlyFocusedElement = null;
         }
 
+        private ToDoElement GetElementFromSender(object sender)
+        {
+            var button = sender as FrameworkElement;
+            var element = (button!.DataContext as ToDoElement)!;
+            return element;
+        }
+
         private void ArrowUpButton_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            var element = button.DataContext as ToDoElement;
+            var element = this.GetElementFromSender(sender);
             var parent = this.TreeSearcher.FindParent(element);
             this.TreeViewMutator.MoveElementUp(element);
             this.Counter.CalculateElementUp(parent);
@@ -245,8 +252,7 @@ namespace TodoLists
 
         private void ArrowDownButton_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            var element = button.DataContext as ToDoElement;
+            var element = this.GetElementFromSender(sender);
             var parent = this.TreeSearcher.FindParent(element);
             this.TreeViewMutator.MoveElementDown(element);
             this.Counter.CalculateElementUp(parent);
@@ -258,15 +264,14 @@ namespace TodoLists
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 var ellipse = sender as Ellipse;
-                var data = ellipse.DataContext as ToDoElement;
-                DragDrop.DoDragDrop(ellipse, "ToDoElement.GUID:" + data.ID.ToString(), DragDropEffects.Move);
+                var data = ellipse!.DataContext as ToDoElement;
+                DragDrop.DoDragDrop(ellipse, "ToDoElement.GUID:" + data!.ID.ToString(), DragDropEffects.Move);
             }
         }
 
         private void ArrowDownButton_Drop(object sender, DragEventArgs e)
         {
-            var button = sender as Button;
-            var context = button.DataContext as ToDoElement;
+            var contextElement = this.GetElementFromSender(sender);
             var dropString = e.Data.GetData(DataFormats.Text) as string;
             if (dropString.StartsWith("ToDoElement.GUID:"))
             {
@@ -275,7 +280,7 @@ namespace TodoLists
                 if (element != null)
                 {
                     var parent = this.TreeSearcher.FindParent(element);
-                    this.TreeViewMutator.DropElementDown(context, element);
+                    this.TreeViewMutator.DropElementDown(contextElement, element);
                     this.Counter.CalculateElementUp(parent);
                     this.Counter.CalculateParentUp(element);
                 }
@@ -286,8 +291,7 @@ namespace TodoLists
 
         private void ArrowUpButton_Drop(object sender, DragEventArgs e)
         {
-            var button = sender as Button;
-            var context = button.DataContext as ToDoElement;
+            var contextElement = this.GetElementFromSender(sender);
             var dropString = e.Data.GetData(DataFormats.Text) as string;
             if (dropString.StartsWith("ToDoElement.GUID:"))
             {
@@ -296,7 +300,7 @@ namespace TodoLists
                 if (element != null)
                 {
                     var parent = this.TreeSearcher.FindParent(element);
-                    this.TreeViewMutator.DropElementUp(context, element);
+                    this.TreeViewMutator.DropElementUp(contextElement, element);
                     this.Counter.CalculateElementUp(parent);
                     this.Counter.CalculateParentUp(element);
                 }
@@ -315,10 +319,8 @@ namespace TodoLists
 
         private void MenuItem_AddChildBelow(object sender, RoutedEventArgs e)
         {
-            var menuItem = sender as MenuItem;
-            var ele = menuItem.DataContext as ToDoElement;
+            var ele = this.GetElementFromSender(sender);
             this.Action_AddChildBelow(ele);
-            
         }
 
         private void Action_AddChildBelow(ToDoElement parent)
@@ -332,12 +334,12 @@ namespace TodoLists
         private void FocusOnElement(ToDoElement ele)
         {
             this.Dispatcher.Invoke(() => { ele.IsTextBoxFocused = true; }, DispatcherPriority.Input);
+            this.CurrentlyFocusedElement = ele;
         }
 
         private void MenuItem_AddSibling(object sender, RoutedEventArgs e)
         {
-            var menuItem = sender as MenuItem;
-            var ele = menuItem.DataContext as ToDoElement;
+            var ele = this.GetElementFromSender(sender);
             this.Action_AddSibling(ele);
         }
 
@@ -350,15 +352,13 @@ namespace TodoLists
 
         private void MenuItem_MoveLeft(object sender, RoutedEventArgs e)
         {
-            var menuItem = sender as MenuItem;
-            var ele = menuItem.DataContext as ToDoElement;
+            var ele = this.GetElementFromSender(sender);
             this.Action_MoveLeft(ele);
         }
 
         private void MenuItem_MoveRight(object sender, RoutedEventArgs e)
         {
-            var menuItem = sender as MenuItem;
-            var ele = menuItem.DataContext as ToDoElement;
+            var ele = this.GetElementFromSender(sender);
             this.Action_MoveRight(ele);
         }
 
@@ -388,34 +388,33 @@ namespace TodoLists
 
         private void MenuItem_MarkWorkInProgress(object sender, RoutedEventArgs e)
         {
-            var menuItem = sender as MenuItem;
-            var ele = menuItem.DataContext as ToDoElement;
+            var ele = this.GetElementFromSender(sender);
             this.Action_MarkWorkInProgress(ele);
         }
 
         private void Action_MarkWorkInProgress(ToDoElement ele)
         {
+            var before = ele.Clone(false);
             this.TreeViewMutator.ChangeStatus(ele, true, false);
             this.Counter.CalculateParentUp(ele);
         }
 
         private void MenuItem_MarkFinished(object sender, RoutedEventArgs e)
         {
-            var menuItem = sender as MenuItem;
-            var ele = menuItem.DataContext as ToDoElement;
+            var ele = this.GetElementFromSender(sender);
             this.Action_MarkFinished(ele);
         }
 
         private void Action_MarkFinished(ToDoElement ele)
         {
+            var before = ele.Clone(false);
             this.TreeViewMutator.ChangeStatus(ele, false, true);
             this.Counter.CalculateParentUp(ele);
         }
 
         private void MenuItem_ClearMarking(object sender, RoutedEventArgs e)
         {
-            var menuItem = sender as MenuItem;
-            var ele = menuItem.DataContext as ToDoElement;
+            var ele = this.GetElementFromSender(sender);
             this.Action_ClearMarking(ele);
         }
 
@@ -427,9 +426,9 @@ namespace TodoLists
 
         private void MenuItem_Delete(object sender, RoutedEventArgs e)
         {
-            var menuItem = sender as MenuItem;
-            var ele = menuItem.DataContext as ToDoElement;
+            var ele = this.GetElementFromSender(sender);
             this.Action_Delete(ele);
+            
         }
 
         private void Action_Delete(ToDoElement ele)

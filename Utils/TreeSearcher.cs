@@ -40,7 +40,7 @@ namespace TodoLists.Utils
             return -1;
         }
 
-        public ToDoElement FindParent(ToDoElement element)
+        public ToDoElement? FindParent(ToDoElement element)
         {
             var parentCollectionIndex = this.IsPartOfParentCollection(element);
             if (parentCollectionIndex != -1)
@@ -49,7 +49,7 @@ namespace TodoLists.Utils
             }
             for (int i = 0; i < this._toDoElements.Count; i++)
             {
-                ToDoElement possibility = this.FindParent(this._toDoElements[i], element);
+                ToDoElement? possibility = this.FindParent(this._toDoElements[i], element);
                 if (possibility != null)
                 {
                     return possibility;
@@ -58,7 +58,7 @@ namespace TodoLists.Utils
             return null;
         }
 
-        private ToDoElement FindParent(ToDoElement elementToCheck, ToDoElement childToFind)
+        private ToDoElement? FindParent(ToDoElement elementToCheck, ToDoElement childToFind)
         {
             for (int i = 0; i < elementToCheck.Children.Count; i++)
             {
@@ -109,7 +109,7 @@ namespace TodoLists.Utils
                 return (elementIndex, this._toDoElements, null);
             }
 
-            ToDoElement parent = this.FindParent(element);
+            ToDoElement parent = this.FindParent(element)!;
             return (parent.Children.IndexOf(element), parent.Children, parent);
         }
     }

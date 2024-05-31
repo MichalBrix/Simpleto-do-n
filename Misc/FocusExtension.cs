@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
+using System.Diagnostics;
 
 namespace TodoLists.Misc
 {
@@ -28,9 +29,14 @@ namespace TodoLists.Misc
         private static object OnCoerceValue(DependencyObject d, object baseValue)
         {
             if ((bool)baseValue)
+            {
+                Debug.WriteLine("Focusing");
                 ((UIElement)d).Focus();
-            else if (((UIElement)d).IsFocused)
+            }
+            else if (((UIElement)d).IsFocused) {
+                Debug.WriteLine("ClearFocus");
                 Keyboard.ClearFocus();
+            }
             return ((bool)baseValue);
         }
     }

@@ -4,9 +4,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Animation;
 using TodoLists.Utils;
 
 namespace TodoLists.Data
@@ -107,9 +104,9 @@ namespace TodoLists.Data
 
         public ObservableCollection<ToDoElement> Children { get; set; } = new ObservableCollection<ToDoElement>();
 
-        public void ForceRefresh()
+        public void ForceRefresh(string propertyName)
         {
-            this.OnPropertyChanged();
+            this.OnPropertyChanged(propertyName);
         }
 
         private void RefreshState()
@@ -126,13 +123,11 @@ namespace TodoLists.Data
 
             if (startsWithDone || endsWithDone)
             {
-                this.IsFinished = true;
-                this.IsInProgress = false;
+                Utils.Mutators.Actions.ChangeStatusAction.Execute(this, false, true);
             }
             else if (startsWithWIP || endsWithWIP)
             {
-                this.IsInProgress = true;
-                this.IsFinished = false;
+                Utils.Mutators.Actions.ChangeStatusAction.Execute(this, true, false);
             }
 
             if (startsWithDone || endsWithDone || startsWithWIP || endsWithWIP)

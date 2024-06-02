@@ -25,13 +25,13 @@ namespace TodoLists.Utils.Mutators.Actions
         public void Execute()
         {
             this._element.SetDescription(this.newDescription);
-            this._element.ForceRefresh();
+            this._element.ForceRefresh(nameof(ToDoElement.Description));
         }
 
         public void Undo()
         {
             this._element.SetDescription(this.oldDescription);
-            this._element.ForceRefresh();
+            this._element.ForceRefresh(nameof(ToDoElement.Description));
         }
 
         public static void Execute(ToDoElement element, string oldDescription, string newDescription)

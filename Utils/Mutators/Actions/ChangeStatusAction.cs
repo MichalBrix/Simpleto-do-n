@@ -32,13 +32,15 @@ namespace TodoLists.Utils.Mutators.Actions
         public void Execute()
         {
             this._element.SetStatus(this._newIsInProgress, this._newIsFinished);
-            this._element.ForceRefresh();
+            this._element.ForceRefresh(nameof (ToDoElement.IsFinished));
+            this._element.ForceRefresh(nameof(ToDoElement.IsInProgress));
 
         }
         public void Undo()
         {
             this._element.SetStatus(this._previousIsInProgress, this._previousIsFinished);
-            this._element.ForceRefresh();
+            this._element.ForceRefresh(nameof(ToDoElement.IsFinished));
+            this._element.ForceRefresh(nameof(ToDoElement.IsInProgress));
         }
 
         public static void Execute(ToDoElement element, bool isInProgress, bool isFinished)

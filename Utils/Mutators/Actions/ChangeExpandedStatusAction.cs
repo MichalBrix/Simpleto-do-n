@@ -27,13 +27,13 @@ namespace TodoLists.Utils.Mutators.Actions
         public void Execute()
         {
             this._element.SetIsExpanded(this.newValue);
-            this._element.ForceRefresh();
+            this._element.ForceRefresh(nameof(ToDoElement.IsExpanded));
 
         }
         public void Undo()
         {
             this._element.SetIsExpanded(this.oldValue);
-            this._element.ForceRefresh();
+            this._element.ForceRefresh(nameof(ToDoElement.IsExpanded));
         }
 
         public static void Execute(ToDoElement element, bool value)

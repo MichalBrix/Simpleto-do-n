@@ -36,7 +36,9 @@ namespace TodoLists.Utils.Mutators.Actions
             this._element.OpenElementsNo = this._newOpenNo;
             this._element.InProgressElementsNo = this._newInProgressNo;
             this._element.FinishedElementsNo = this._newFinishedNo;
-            this._element.ForceRefresh();
+            this._element.ForceRefresh(nameof(ToDoElement.OpenElementsNo));
+            this._element.ForceRefresh(nameof(ToDoElement.InProgressElementsNo));
+            this._element.ForceRefresh(nameof(ToDoElement.FinishedElementsNo));
 
         }
         public void Undo()
@@ -44,7 +46,9 @@ namespace TodoLists.Utils.Mutators.Actions
             this._element.OpenElementsNo = this._previousOpenNo;
             this._element.InProgressElementsNo = this._previousInProgressNo;
             this._element.FinishedElementsNo = this._previousFinishedNo;
-            this._element.ForceRefresh();
+            this._element.ForceRefresh(nameof(ToDoElement.OpenElementsNo));
+            this._element.ForceRefresh(nameof(ToDoElement.InProgressElementsNo));
+            this._element.ForceRefresh(nameof(ToDoElement.FinishedElementsNo));
         }
 
         public static void Execute(ToDoElement element, int openElementsNo, int inProgressElementsNo, int finishedElementsNo)

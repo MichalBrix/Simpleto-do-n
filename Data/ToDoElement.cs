@@ -7,19 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
+using TodoLists.Utils;
 
 namespace TodoLists.Data
 {
     public class ToDoElement : INotifyPropertyChanged
     {
-        public delegate void UndoRedoNeedToInclude(ToDoElement elementBefore, ToDoElement elementAfter);
-
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public event UndoRedoNeedToInclude? UndoRedoNeedToIncludeEvent;
-
         public Guid ID { get; set; } = Guid.NewGuid();
-
 
         private string _description = "";
         public string Description
@@ -27,14 +23,27 @@ namespace TodoLists.Data
             get { return _description; }
             set
             {
-                var undoRedoBefore = this.Clone(false);
+                string oldDescription = this._description;
                 _description = value;
                 RefreshState();
                 OnPropertyChanged();
-                UndoRedoNeedToIncludeEvent?.Invoke(undoRedoBefore, this.Clone(false));
+                Utils.Mutators.Actions.DescriptionChangeAction.Execute(this, oldDescription, this._description);
+                UndoRedoTracker.I.FinishTransaction();
             }
         }
 
+        public void SetDescription(string description)
+        {
+            this._description = description;
+            OnPropertyChanged();
+        }
+
+        public void SetStatus(bool isInProgress, bool isFinished)
+        {
+            this._isInProgress = isInProgress;
+            this._isFinished = isFinished;
+            OnPropertyChanged();
+        }
         private bool _isInProgress;
         private bool _isFinished;
         public bool IsInProgress
@@ -43,18 +52,13 @@ namespace TodoLists.Data
             { return _isInProgress; }
             set
             {
-                ToDoElement? before = null;
-                if (!this._suppressUndoRedo)
+                if (value != _isInProgress)
                 {
-                    before = this.Clone(false);
+                    Utils.Mutators.Actions.ChangeStatusAction.Execute(this, value, this.IsFinished);
+                    OnPropertyChanged();
+                    UndoRedoTracker.I.FinishTransaction();
                 }
-                _isInProgress = value;
-                OnPropertyChanged();
-                if (!this._suppressUndoRedo)
-                {
-                    UndoRedoNeedToIncludeEvent?.Invoke(before!, this.Clone(false));
-                }
-
+                
             }
         }
         public bool IsFinished
@@ -65,20 +69,22 @@ namespace TodoLists.Data
             }
             set
             {
-                ToDoElement? before = null;
-                if (!this._suppressUndoRedo)
+                if (_isFinished != value)
                 {
-                    before = this.Clone(false);
+                    Utils.Mutators.Actions.ChangeStatusAction.Execute(this, this.IsInProgress, value);
+                    OnPropertyChanged();
+                    UndoRedoTracker.I.FinishTransaction();
                 }
-                _isFinished = value;
-                OnPropertyChanged();
-                if (!this._suppressUndoRedo)
-                {
-                    UndoRedoNeedToIncludeEvent?.Invoke(before!, this.Clone(false));
-                }
+                
             }
         }
 
+
+        public void SetIsExpanded(bool value)
+        {
+            this._isExpanded = value;
+            OnPropertyChanged();
+        }
         private bool _isExpanded;
         public bool IsExpanded { get { return _isExpanded; } set { _isExpanded = value; OnPropertyChanged(); } }
 
@@ -96,8 +102,8 @@ namespace TodoLists.Data
         public int InProgressElementsNo { get { return _inProgressElementsNo; } set { _inProgressElementsNo = value; OnPropertyChanged(); } }
         public int FinishedElementsNo { get { return _finishedElementsNo; } set { _finishedElementsNo = value; OnPropertyChanged(); } }
 
-        public DateTime? Started { get; set; }
-        public DateTime? Finished { get; set; }
+        //public DateTime? Started { get; set; }
+        //public DateTime? Finished { get; set; }
 
         public ObservableCollection<ToDoElement> Children { get; set; } = new ObservableCollection<ToDoElement>();
 
@@ -105,8 +111,6 @@ namespace TodoLists.Data
         {
             this.OnPropertyChanged();
         }
-
-        private bool _suppressUndoRedo = false;
 
         private void RefreshState()
         {
@@ -122,17 +126,13 @@ namespace TodoLists.Data
 
             if (startsWithDone || endsWithDone)
             {
-                this._suppressUndoRedo = true;
                 this.IsFinished = true;
                 this.IsInProgress = false;
-                this._suppressUndoRedo = false;
             }
             else if (startsWithWIP || endsWithWIP)
             {
-                this._suppressUndoRedo = true;
                 this.IsInProgress = true;
                 this.IsFinished = false;
-                this._suppressUndoRedo = false;
             }
 
             if (startsWithDone || endsWithDone || startsWithWIP || endsWithWIP)
@@ -160,9 +160,10 @@ namespace TodoLists.Data
 
 
                     howMuchToDelete = this._description.Length - whereToStartDeleting;
-                    if (howMuchToDelete < 5)
+                    if (howMuchToDelete <= 4)
                     {
                         this._description = this._description.Remove(whereToStartDeleting, howMuchToDelete);
+                        this._description.TrimEnd();
                     }
                 }
             }
@@ -236,9 +237,9 @@ namespace TodoLists.Data
                 IsTextBoxFocused = this.IsTextBoxFocused,
                 OpenElementsNo = this.OpenElementsNo,
                 InProgressElementsNo = this.InProgressElementsNo,
-                FinishedElementsNo = this.FinishedElementsNo,
-                Started = this.Started,
-                Finished = this.Finished
+                FinishedElementsNo = this.FinishedElementsNo
+                //Started = this.Started,
+                //Finished = this.Finished
             };
 
             if (deepClone)

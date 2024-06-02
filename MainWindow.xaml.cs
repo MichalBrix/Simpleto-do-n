@@ -20,6 +20,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using TodoLists.Data;
 using TodoLists.Utils;
+using TodoLists.Utils.Mutators;
 
 namespace TodoLists
 {
@@ -36,8 +37,10 @@ namespace TodoLists
 
         public MainWindow()
         {
+            UndoRedoTracker.I.SuppressTracking = true;
             this.ToDoElements = new ObservableCollection<ToDoElement>();
             
+
             for (var i = 0; i < 10; i++)
             {
                 this.ToDoElements.Add(MakeToDoElement(0));
@@ -51,9 +54,11 @@ namespace TodoLists
             this.FontSize = 16;
             this.ToDoTree.ItemsSource = this.ToDoElements;
             this.TreeSearcher = new TreeSearcher(this.ToDoElements);
-            this.TreeViewMutator = new TreeViewMutator(this.TreeSearcher, this.ToDoTree, this.ToDoElements);
-            this.Counter = new ElementCounter(this.ToDoElements, this.TreeSearcher);
+            var finalMutator = new FinalMutators();
+            this.TreeViewMutator = new TreeViewMutator(this.TreeSearcher, finalMutator, this.ToDoTree, this.ToDoElements);
+            this.Counter = new ElementCounter(this.ToDoElements, this.TreeSearcher, finalMutator);
             this.Counter.RecalculateElements();
+            UndoRedoTracker.I.SuppressTracking = false;
         }
 
         private int counter = 0;
@@ -62,12 +67,8 @@ namespace TodoLists
         {
             counter++;
             var element = new Data.ToDoElement();
-            element.Description = "Element " + depth + " (" + counter + ")";
-            element.IsInProgress = false;
-            element.IsFinished = false;
-            element.Started = null;
-            element.Finished = null;
-            //element.UndoRedoNeedToIncludeEvent += RegisterUndoRedo;
+            element.SetDescription("Element " + depth + " (" + counter + ")");
+            element.SetStatus(false, false);
             if (depth < 5)
             {
                 for (var i = 0; i < 4; i++)
@@ -222,6 +223,23 @@ namespace TodoLists
                     }
                 }
             }
+            
+        }
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Z && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                UndoRedoTracker.I.Undo();
+            }
+            else if (e.Key == Key.Y && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                UndoRedoTracker.I.Redo();
+            }
+            else if (e.OriginalSource is TextBox && (e.SystemKey == Key.LeftAlt || e.SystemKey == Key.RightAlt))
+            {
+                e.Handled = true;
+            }
         }
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
@@ -248,6 +266,7 @@ namespace TodoLists
             this.TreeViewMutator.MoveElementUp(element);
             this.Counter.CalculateElementUp(parent);
             this.Counter.CalculateParentUp(element);
+            UndoRedoTracker.I.FinishTransaction();
         }
 
         private void ArrowDownButton_Click(object sender, RoutedEventArgs e)
@@ -257,6 +276,7 @@ namespace TodoLists
             this.TreeViewMutator.MoveElementDown(element);
             this.Counter.CalculateElementUp(parent);
             this.Counter.CalculateParentUp(element);
+            UndoRedoTracker.I.FinishTransaction();
         }
 
         private void Ellipse_MouseMove(object sender, MouseEventArgs e)
@@ -273,7 +293,7 @@ namespace TodoLists
         {
             var contextElement = this.GetElementFromSender(sender);
             var dropString = e.Data.GetData(DataFormats.Text) as string;
-            if (dropString.StartsWith("ToDoElement.GUID:"))
+            if (dropString != null && dropString.StartsWith("ToDoElement.GUID:"))
             {
                 dropString = dropString.Split(':')[1];
                 var element = this.TreeSearcher.GetElementByGuid(dropString);
@@ -283,6 +303,7 @@ namespace TodoLists
                     this.TreeViewMutator.DropElementDown(contextElement, element);
                     this.Counter.CalculateElementUp(parent);
                     this.Counter.CalculateParentUp(element);
+                    UndoRedoTracker.I.FinishTransaction();
                 }
             }
             
@@ -293,7 +314,7 @@ namespace TodoLists
         {
             var contextElement = this.GetElementFromSender(sender);
             var dropString = e.Data.GetData(DataFormats.Text) as string;
-            if (dropString.StartsWith("ToDoElement.GUID:"))
+            if (dropString != null && dropString.StartsWith("ToDoElement.GUID:"))
             {
                 dropString = dropString.Split(':')[1];
                 var element = this.TreeSearcher.GetElementByGuid(dropString);
@@ -303,18 +324,11 @@ namespace TodoLists
                     this.TreeViewMutator.DropElementUp(contextElement, element);
                     this.Counter.CalculateElementUp(parent);
                     this.Counter.CalculateParentUp(element);
+                    UndoRedoTracker.I.FinishTransaction();
                 }
             }
 
             return;
-        }
-
-        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.OriginalSource is TextBox && (e.SystemKey == Key.LeftAlt || e.SystemKey == Key.RightAlt))
-            {
-                e.Handled = true;
-            }
         }
 
         private void MenuItem_AddChildBelow(object sender, RoutedEventArgs e)
@@ -329,6 +343,7 @@ namespace TodoLists
             var newEle = this.TreeViewMutator.AddChildToElement(parent);
             this.Counter.CalculateElementUp(parent);
             this.FocusOnElement(newEle);
+            UndoRedoTracker.I.FinishTransaction();
         }
 
         private void FocusOnElement(ToDoElement ele)
@@ -348,6 +363,7 @@ namespace TodoLists
             var newElement = this.TreeViewMutator.AddSibling(element);
             this.Counter.CalculateParentUp(element);
             this.FocusOnElement(newElement);
+            UndoRedoTracker.I.FinishTransaction();
         }
 
         private void MenuItem_MoveLeft(object sender, RoutedEventArgs e)
@@ -371,7 +387,7 @@ namespace TodoLists
                 this.Counter.CalculateElementUp(parent);
                 this.FocusOnElement(ele);
             }
-            
+            UndoRedoTracker.I.FinishTransaction();
         }
 
         private void Action_MoveRight(ToDoElement ele)
@@ -384,6 +400,7 @@ namespace TodoLists
                 this.Counter.CalculateElementUp(eleData.Parent);
                 this.FocusOnElement(ele);
             }
+            UndoRedoTracker.I.FinishTransaction();
         }
 
         private void MenuItem_MarkWorkInProgress(object sender, RoutedEventArgs e)
@@ -397,6 +414,7 @@ namespace TodoLists
             var before = ele.Clone(false);
             this.TreeViewMutator.ChangeStatus(ele, true, false);
             this.Counter.CalculateParentUp(ele);
+            UndoRedoTracker.I.FinishTransaction();
         }
 
         private void MenuItem_MarkFinished(object sender, RoutedEventArgs e)
@@ -410,6 +428,7 @@ namespace TodoLists
             var before = ele.Clone(false);
             this.TreeViewMutator.ChangeStatus(ele, false, true);
             this.Counter.CalculateParentUp(ele);
+            UndoRedoTracker.I.FinishTransaction();
         }
 
         private void MenuItem_ClearMarking(object sender, RoutedEventArgs e)
@@ -422,6 +441,7 @@ namespace TodoLists
         {
             this.TreeViewMutator.ChangeStatus(ele, false, false);
             this.Counter.CalculateParentUp(ele);
+            UndoRedoTracker.I.FinishTransaction();
         }
 
         private void MenuItem_Delete(object sender, RoutedEventArgs e)
@@ -439,6 +459,7 @@ namespace TodoLists
             {
                 this.Counter.CalculateElementUp(parent);
             }
+            UndoRedoTracker.I.FinishTransaction();
         }
     }
 }

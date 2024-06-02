@@ -2,76 +2,86 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using TodoLists.Data;
+using TodoLists.Utils.Mutators.Actions;
 
 namespace TodoLists.Utils.Mutators
 {
-    internal class FinalMutators
+    public class FinalMutators
     {
         public void RebaseAsLast(ToDoElement element, ObservableCollection<ToDoElement> newParentCollection, ObservableCollection<ToDoElement> oldParentCollection)
         {
-            oldParentCollection.Remove(element);
-            newParentCollection.Add(element);
+            RemoveElementFromListAction.Execute(oldParentCollection, oldParentCollection.IndexOf(element), element);
+            AddElementToListAction.Execute(newParentCollection, newParentCollection.Count, element);
         }
         public void RebaseAsFirst(ToDoElement element, ObservableCollection<ToDoElement> newParentCollection, ObservableCollection<ToDoElement> oldParentCollection)
         {
-            oldParentCollection.Remove(element);
-            newParentCollection.Insert(0, element);
+            RemoveElementFromListAction.Execute(oldParentCollection, oldParentCollection.IndexOf(element), element);
+            AddElementToListAction.Execute(newParentCollection, 0, element);
         }
 
         public void RebaseOnIndex(ToDoElement element, int newIndex, ObservableCollection<ToDoElement> newParentCollection, ObservableCollection<ToDoElement> oldParentCollection)
         {
+            var oldIndex = oldParentCollection.IndexOf(element);
             if (oldParentCollection == newParentCollection)
             {
-                var oldIndex = oldParentCollection.IndexOf(element);
                 if (oldIndex == newIndex)
                 {
                     return;
                 }
                 if (oldIndex > newIndex)
                 {
-                    newParentCollection.Insert(newIndex, element);
-                    oldParentCollection.RemoveAt(oldIndex + 1);
+                    AddElementToListAction.Execute(newParentCollection, newIndex, element);
+                    RemoveElementFromListAction.Execute(oldParentCollection, oldIndex + 1, element);
                 }
                 else
                 {
-                    newParentCollection.Insert(newIndex, element);
-                    oldParentCollection.RemoveAt(oldIndex);
+                    AddElementToListAction.Execute(newParentCollection, newIndex, element);
+                    RemoveElementFromListAction.Execute(oldParentCollection, oldIndex, element);
                 }
             }
             else
             {
-                oldParentCollection.Remove(element);
-                newParentCollection.Insert(newIndex, element);
+                RemoveElementFromListAction.Execute(oldParentCollection, oldIndex, element);
+                AddElementToListAction.Execute(newParentCollection, newIndex, element);
             }
         }
 
         public void RemoveElement(ToDoElement element, ObservableCollection<ToDoElement> parentCollection)
         {
-            parentCollection.Remove(element);
+            RemoveElementFromListAction.Execute(parentCollection, parentCollection.IndexOf(element), element);
         }
 
-        public ToDoElement AddNewChildToElement( ToDoElement parent)
+        public ToDoElement AddNewChildToElement(ToDoElement parent)
         {
             var newEle = new ToDoElement();
-            parent.Children.Add(newEle);
-
+            AddElementToListAction.Execute(parent.Children, parent.Children.Count, newEle);
             return newEle;
         }
 
-        public ToDoElement AddNewChildToElement(ToDoElement? parent, int index, ObservableCollection<ToDoElement> list)
+        public ToDoElement AddNewChildToElement(int index, ObservableCollection<ToDoElement> list)
         {
             var newEle = new ToDoElement();
-            list.Insert(index, newEle);
+            AddElementToListAction.Execute(list, index, newEle);
             return newEle;
         }
 
         public void ChangeStatus(ToDoElement element, bool isWorkInProgress, bool isFinished)
         {
-            element.IsFinished = isFinished;
-            element.IsInProgress = isWorkInProgress;
+            ChangeStatusAction.Execute(element, isWorkInProgress, isFinished);
+        }
+
+        public void ChangeExpandedStatus(ToDoElement element, bool value)
+        {
+            ChangeExpandedStatusAction.Execute(element, value);
+        }
+
+        public void SetCount(ToDoElement element, int openElementsNo, int inProgressElementsNo, int finishedElementsNo)
+        {
+            ChangeCountAction.Execute(element, openElementsNo, inProgressElementsNo, finishedElementsNo);
         }
     }
 }

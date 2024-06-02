@@ -13,6 +13,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using TodoLists.Data;
+using TodoLists.Utils.Mutators;
 
 namespace TodoLists.Utils
 {
@@ -24,13 +25,13 @@ namespace TodoLists.Utils
         private Mutators.FinalMutators _finalMutators;
         private Mutators.Selector _selector;
         
-        public TreeViewMutator(TreeSearcher treeSearcher, TreeView treeView, ObservableCollection<ToDoElement> toDoElements)
+        public TreeViewMutator(TreeSearcher treeSearcher, FinalMutators finalMutator, TreeView treeView, ObservableCollection<ToDoElement> toDoElements)
         {
             _treeSearcher = treeSearcher;
             _treeView = treeView;
             this._selector = new Mutators.Selector();
             _toDoElements = toDoElements;
-            this._finalMutators = new Mutators.FinalMutators();
+            this._finalMutators = finalMutator;
         }
 
         public void ExpandElement (ToDoElement element)
@@ -245,7 +246,7 @@ namespace TodoLists.Utils
         public ToDoElement AddSibling(ToDoElement ele)
         {
             var eleData = this._treeSearcher.GetIndexAndParentCollectionFromElement(ele);
-            return this._finalMutators.AddNewChildToElement(eleData.Parent, eleData.Index + 1, eleData.ParentList);
+            return this._finalMutators.AddNewChildToElement(eleData.Index + 1, eleData.ParentList);
         }
 
         public void MoveAsParentSiblingBelow(ToDoElement ele, ToDoElement sibling)
@@ -261,7 +262,7 @@ namespace TodoLists.Utils
             {
                 var newParent = parentChildren[index - 1];
                 this._finalMutators.RebaseAsLast(ele, newParent.Children, parentChildren);
-                newParent.IsExpanded = true;
+                this._finalMutators.ChangeExpandedStatus(newParent, true);
             }
         }
 

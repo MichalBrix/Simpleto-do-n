@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TodoLists.Data;
+using TodoLists.Utils.Mutators;
 
 namespace TodoLists.Utils
 {
@@ -12,11 +13,13 @@ namespace TodoLists.Utils
     {
         private TreeSearcher _searcher;
         private ObservableCollection<ToDoElement> _toDoElements;
+        private FinalMutators _mutator;
 
-        public ElementCounter(ObservableCollection<ToDoElement> toDoElements, TreeSearcher _sercher)
+        public ElementCounter(ObservableCollection<ToDoElement> toDoElements, TreeSearcher _sercher, FinalMutators mutator)
         {
             _toDoElements = toDoElements;
             this._searcher = _sercher;
+            this._mutator= mutator;
         }
 
         public void RecalculateElements()
@@ -63,27 +66,29 @@ namespace TodoLists.Utils
 
         private void RecalculateNumbers(ToDoElement element)
         {
-            element.FinishedElementsNo = 0;
-            element.InProgressElementsNo = 0;
-            element.OpenElementsNo = 0;
+            int finishedElementsNo = 0;
+            int inProgressElementsNo = 0;
+            int openElementsNo = 0;
             foreach (var child in element.Children)
             {
                 if (child.IsFinished)
                 {
-                    element.FinishedElementsNo++;
+                    finishedElementsNo++;
                 }
                 else if (child.IsInProgress)
                 {
-                    element.InProgressElementsNo++;
+                    inProgressElementsNo++;
                 }
                 else
                 {
-                    element.OpenElementsNo++;
+                    openElementsNo++;
                 }
-                element.FinishedElementsNo += child.FinishedElementsNo;
-                element.InProgressElementsNo += child.InProgressElementsNo;
-                element.OpenElementsNo += child.OpenElementsNo;
+                finishedElementsNo += child.FinishedElementsNo;
+                inProgressElementsNo += child.InProgressElementsNo;
+                openElementsNo += child.OpenElementsNo;
             }
+
+            this._mutator.SetCount(element, openElementsNo, inProgressElementsNo, finishedElementsNo);
         }
     }
 }

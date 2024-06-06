@@ -106,7 +106,19 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <DockPanel HorizontalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New" Click="MainMenuClick_New"></MenuItem>
+                <MenuItem Header="_Save" Click="MainMenuClick_Save"></MenuItem>
+                <MenuItem Header="S_ave As" Click="MainMenuClick_SaveAs"></MenuItem>
+                <MenuItem Header="_Load" Click="MainMenuClick_Load"></MenuItem>
+            </MenuItem>
+        </Menu>
+        <DockPanel HorizontalAlignment="Stretch" Grid.Row="1">
             <DockPanel.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type localData:ToDoElement}" ItemsSource="{Binding Path=Children}">
                     <Border BorderBrush="LightGray" Background="White" BorderThickness=" 0 0.7 0 0.7">

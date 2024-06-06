@@ -13,6 +13,8 @@ namespace TodoLists.Data
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public Guid ID { get; set; } = Guid.NewGuid();
+        public DateTime? DateStarted { get; set; }
+        public DateTime? DateFinished { get; set; }
 
         private string _description = "";
         public string Description
@@ -32,14 +34,40 @@ namespace TodoLists.Data
         public void SetDescription(string description)
         {
             this._description = description;
-            OnPropertyChanged();
+            OnPropertyChanged(nameof(this.Description));
         }
 
         public void SetStatus(bool isInProgress, bool isFinished)
         {
             this._isInProgress = isInProgress;
             this._isFinished = isFinished;
-            OnPropertyChanged();
+            if (this._isInProgress == true)
+            {
+                if (this.DateStarted == null)
+                {
+                    this.DateStarted = DateTime.Now;
+                }
+                this.DateFinished = null;
+            }
+
+            if (this._isFinished == true)
+            {
+                if (this.DateFinished == null)
+                {
+                    this.DateFinished = DateTime.Now;
+                }
+            }
+            else
+            {
+                this.DateFinished = null;
+            }
+
+            if (this.IsFinished == false && this._isInProgress == false)
+            {
+                this.DateStarted = null;
+            }
+            OnPropertyChanged(nameof(this.IsInProgress));
+            OnPropertyChanged(nameof(this.IsFinished));
         }
         private bool _isInProgress;
         private bool _isFinished;
@@ -52,10 +80,9 @@ namespace TodoLists.Data
                 if (value != _isInProgress)
                 {
                     Utils.Mutators.Actions.ChangeStatusAction.Execute(this, value, this.IsFinished);
-                    OnPropertyChanged();
                     UndoRedoTracker.I.FinishTransaction();
                 }
-                
+
             }
         }
         public bool IsFinished
@@ -69,10 +96,9 @@ namespace TodoLists.Data
                 if (_isFinished != value)
                 {
                     Utils.Mutators.Actions.ChangeStatusAction.Execute(this, this.IsInProgress, value);
-                    OnPropertyChanged();
                     UndoRedoTracker.I.FinishTransaction();
                 }
-                
+
             }
         }
 
@@ -80,7 +106,7 @@ namespace TodoLists.Data
         public void SetIsExpanded(bool value)
         {
             this._isExpanded = value;
-            OnPropertyChanged();
+            OnPropertyChanged(nameof(this.IsExpanded));
         }
         private bool _isExpanded;
         public bool IsExpanded { get { return _isExpanded; } set { _isExpanded = value; OnPropertyChanged(); } }
@@ -98,9 +124,6 @@ namespace TodoLists.Data
         public int OpenElementsNo { get { return _opentElementsNo; } set { _opentElementsNo = value; OnPropertyChanged(); } }
         public int InProgressElementsNo { get { return _inProgressElementsNo; } set { _inProgressElementsNo = value; OnPropertyChanged(); } }
         public int FinishedElementsNo { get { return _finishedElementsNo; } set { _finishedElementsNo = value; OnPropertyChanged(); } }
-
-        //public DateTime? Started { get; set; }
-        //public DateTime? Finished { get; set; }
 
         public ObservableCollection<ToDoElement> Children { get; set; } = new ObservableCollection<ToDoElement>();
 
@@ -232,7 +255,9 @@ namespace TodoLists.Data
                 IsTextBoxFocused = this.IsTextBoxFocused,
                 OpenElementsNo = this.OpenElementsNo,
                 InProgressElementsNo = this.InProgressElementsNo,
-                FinishedElementsNo = this.FinishedElementsNo
+                FinishedElementsNo = this.FinishedElementsNo,
+                DateStarted = this.DateStarted,
+                DateFinished = this.DateFinished
                 //Started = this.Started,
                 //Finished = this.Finished
             };
@@ -246,6 +271,32 @@ namespace TodoLists.Data
             }
 
             return clone;
+        }
+
+        public ToDoElement()
+        {
+        }
+
+        public ToDoElement(ToDoElementSaveObj source)
+        {
+            this.ID = Guid.Parse(source.ID);
+            this._isInProgress = source.IsInProgress;
+            this._isFinished = source.IsFinished;
+            this._description = source.Description;
+            if (this.IsInProgress && source.ToDoElements.Any())
+            {
+                this.IsExpanded = true;
+            }
+            this._opentElementsNo = source.OpenElementsNo;
+            this._finishedElementsNo = source.FinishedElementsNo;
+            this._inProgressElementsNo = source.FinishedElementsNo;
+            this.DateFinished = source.DateFinished;
+            this.DateStarted = source.DateStarted;
+            this.Children = new ObservableCollection<ToDoElement>();
+            foreach (var sourceChild in source.ToDoElements)
+            {
+                this.Children.Add(new ToDoElement(sourceChild));
+            }
         }
     }
 }

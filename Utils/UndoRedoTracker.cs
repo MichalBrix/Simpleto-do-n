@@ -11,6 +11,13 @@ namespace TodoLists.Utils
     {
         public static UndoRedoTracker I { get; } = new UndoRedoTracker();
 
+        public bool ChangedSinceLastSave { get; private set; } = false;
+
+        public void OnSave()
+        {
+            this.ChangedSinceLastSave = false;
+        }
+
         public bool SuppressTracking = false;
 
         private List<IAction> CurrentStack = new List<IAction>();    
@@ -23,6 +30,7 @@ namespace TodoLists.Utils
             if (!this.SuppressTracking)
             {
                 this.CurrentStack.Add(action);
+                this.ChangedSinceLastSave = true;
             }
         }
 
@@ -33,6 +41,7 @@ namespace TodoLists.Utils
                 this.historyForUndo.Add(this.CurrentStack);
                 this.CurrentStack = new List<IAction>();
                 this.historyForRedo.Clear();
+                this.ChangedSinceLastSave = true;
             }
         }
 
@@ -50,6 +59,7 @@ namespace TodoLists.Utils
                 return;
             }
             UndoActions(lastTransaction);
+            this.ChangedSinceLastSave = true;
             this.historyForRedo.Add(lastTransaction);
         }
 
@@ -79,6 +89,7 @@ namespace TodoLists.Utils
             {
                 action.Execute();
             }
+            this.ChangedSinceLastSave = true;
             this.historyForUndo.Add(lastTransaction);
         }
     }

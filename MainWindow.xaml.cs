@@ -1,21 +1,13 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Media.TextFormatting;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using TodoLists.Data;
@@ -35,19 +27,21 @@ namespace TodoLists
         private TreeViewMutator TreeViewMutator;
         public ObservableCollection<Data.ToDoElement> ToDoElements { get; set; }
 
+        private ProgramInitData ProgramInitData = ProgramInitData.Load();
+
         public MainWindow()
         {
             UndoRedoTracker.I.SuppressTracking = true;
             this.ToDoElements = new ObservableCollection<ToDoElement>();
-            
 
-            for (var i = 0; i < 10; i++)
+            if (ProgramInitData.LatestFile != null && System.IO.File.Exists(ProgramInitData.LatestFile))
             {
-                this.ToDoElements.Add(MakeToDoElement(0));
+                this.LoadFromFile(ProgramInitData.LatestFile);
             }
-            
-            
-
+            else
+            {
+                this.ToDoElements.Add(new ToDoElement() { Description = "RTFM" });
+            }
             InitializeComponent();
 
             this.FontFamily = new FontFamily("Consolas");
@@ -60,6 +54,28 @@ namespace TodoLists
             this.Counter.RecalculateElements();
             UndoRedoTracker.I.SuppressTracking = false;
         }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            if (UndoRedoTracker.I.ChangedSinceLastSave) {    
+                var result = MessageBox.Show("Do you want to save the current list?", "Save?", MessageBoxButton.YesNoCancel);
+                if (result == MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+                else if (result == MessageBoxResult.Yes)
+                {
+                    bool saved = this.Action_Save();
+                    if (!saved)
+                    {
+                        e.Cancel = true;
+                    
+                    }
+                }
+            }
+            base.OnClosing(e);
+        }
+
 
         private int counter = 0;
 
@@ -460,6 +476,111 @@ namespace TodoLists
                 this.Counter.CalculateElementUp(parent);
             }
             UndoRedoTracker.I.FinishTransaction();
+        }
+
+        private void MainMenuClick_New(object sender, RoutedEventArgs e)
+        {
+            this.ProgramInitData.LatestFile = null;
+            this.ProgramInitData.Save();
+            if (this.ToDoElements.Count > 0)
+            {
+                if (!(this.ToDoElements.Count == 1 && this.ToDoElements[0].Description == "RTFM")) 
+                {
+                    var result = MessageBox.Show("Do you want to save the current list?", "Save?", MessageBoxButton.YesNoCancel);
+                    if (result == MessageBoxResult.Cancel)
+                    {
+                        return;
+                    }
+                    else if (result == MessageBoxResult.Yes)
+                    {
+                        //this.MainMenuClick_Save(sender, e);
+                    }
+                    this.ToDoElements.Clear();
+                    this.ToDoElements.Add(new ToDoElement() { Description = "RTFM" });
+                }                
+            }
+        }
+
+        private void MainMenuClick_Save(object sender, RoutedEventArgs e)
+        {
+            this.Action_Save();
+        }
+
+        private void MainMenuClick_SaveAs(object sender, RoutedEventArgs e)
+        {
+            this.Action_SaveAs();
+        }
+
+        private bool Action_Save()
+        {
+            if (string.IsNullOrEmpty(this.ProgramInitData.LatestFile))
+            {
+                return this.Action_SaveAs();
+            }
+            else
+            {
+                this.SerializeToFile(ProgramInitData.LatestFile);
+                return true;
+            }
+        }
+
+        private bool Action_SaveAs()
+        {
+            Microsoft.Win32.SaveFileDialog saveFileDialog = new Microsoft.Win32.SaveFileDialog();
+            saveFileDialog.Filter = "SimpleToDon files (*.stdn)|*.stdn";
+            saveFileDialog.FileName = "ToDoList";
+            saveFileDialog.DefaultExt = ".stdn";
+
+            Nullable<bool> result = saveFileDialog.ShowDialog();
+            if (result == true)
+            {
+                this.SerializeToFile(saveFileDialog.FileName);
+                this.ProgramInitData.AddFile(saveFileDialog.FileName);
+                this.ProgramInitData.Save();
+                return true;
+            }
+            return false;
+        }
+
+        private void SerializeToFile(string fileName)
+        {
+            var objList = new List<ToDoElementSaveObj>();
+            foreach( var ele in this.ToDoElements)
+            {
+                objList.Add(new ToDoElementSaveObj(ele));
+            }
+            //yes, there can be a problem if someone add 64 elements deep tree. 
+            //but than that person has way more problems than that app not working.
+            //So i don't care.
+            string json = JsonSerializer.Serialize(objList, new JsonSerializerOptions { WriteIndented = true });
+            System.IO.File.WriteAllText(fileName, json);
+        }
+
+        private void MainMenuClick_Load(object sender, RoutedEventArgs e)
+        {
+            this.Action_Load();
+        }
+
+        private void Action_Load()
+        {
+            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            openFileDialog.Filter = "SimpleToDon files (*.stdn)|*.stdn";
+            Nullable<bool> result = openFileDialog.ShowDialog();
+            if (result == true)
+            {
+                this.LoadFromFile(openFileDialog.FileName);
+            }
+        }
+
+        private void LoadFromFile(string fileName)
+        {
+            string json = System.IO.File.ReadAllText(fileName);
+            var objList = JsonSerializer.Deserialize<List<ToDoElementSaveObj>>(json);
+            this.ToDoElements.Clear();
+            foreach (var ele in objList)
+            {
+                this.ToDoElements.Add(new ToDoElement(ele));
+            }
         }
     }
 }

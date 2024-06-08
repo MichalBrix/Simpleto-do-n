@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace TodoLists
+namespace Simpletodon
 {
     /// <summary>
     /// Interaction logic for App.xaml

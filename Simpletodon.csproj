@@ -5,6 +5,7 @@
     <TargetFramework>net7.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Art\SimpletodonIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +16,15 @@
     <None Remove="Art\AddChild.svg" />
     <None Remove="Art\ArrowDown.png" />
     <None Remove="Art\ArrowUp.png" />
+    <None Remove="SimpletodonIcon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Art\SimpletodonIcon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="SimpletodonIcon.ico" />
   </ItemGroup>
 
   <ItemGroup>

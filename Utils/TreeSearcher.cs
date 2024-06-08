@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using TodoLists.Data;
+using Simpletodon.Data;
 
-namespace TodoLists.Utils
+namespace Simpletodon.Utils
 {
     public class TreeSearcher
     {

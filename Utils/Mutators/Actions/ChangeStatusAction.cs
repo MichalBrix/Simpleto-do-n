@@ -4,9 +4,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TodoLists.Data;
+using Simpletodon.Data;
 
-namespace TodoLists.Utils.Mutators.Actions
+namespace Simpletodon.Utils.Mutators.Actions
 {
     internal class ChangeStatusAction : IAction
     {

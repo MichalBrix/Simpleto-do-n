@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TodoLists.Utils.Mutators.Actions;
+using Simpletodon.Utils.Mutators.Actions;
 
-namespace TodoLists.Utils
+namespace Simpletodon.Utils
 {
     public class UndoRedoTracker
     {

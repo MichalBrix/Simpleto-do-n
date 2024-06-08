@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
-namespace TodoLists.Misc
+namespace Simpletodon.Misc
 {
     internal class DependencyObjectHelper
     {

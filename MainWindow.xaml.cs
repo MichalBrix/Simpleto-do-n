@@ -10,11 +10,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using TodoLists.Data;
-using TodoLists.Utils;
-using TodoLists.Utils.Mutators;
+using Simpletodon.Data;
+using Simpletodon.Utils;
+using Simpletodon.Utils.Mutators;
 
-namespace TodoLists
+namespace Simpletodon
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Permissions;
 
 
-namespace TodoLists.Data
+namespace Simpletodon.Data
 {
     public class ToDoElementSaveObj
     {

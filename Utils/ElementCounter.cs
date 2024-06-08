@@ -4,10 +4,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TodoLists.Data;
-using TodoLists.Utils.Mutators;
+using Simpletodon.Data;
+using Simpletodon.Utils.Mutators;
 
-namespace TodoLists.Utils
+namespace Simpletodon.Utils
 {
     public class ElementCounter
     {

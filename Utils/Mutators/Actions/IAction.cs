@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TodoLists.Utils.Mutators.Actions
+namespace Simpletodon.Utils.Mutators.Actions
 {
     public interface IAction
     {

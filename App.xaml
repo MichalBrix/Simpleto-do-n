@@ -1,7 +1,7 @@
-﻿<Application x:Class="TodoLists.App"
+﻿<Application x:Class="Simpletodon.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:TodoLists"
+             xmlns:local="clr-namespace:Simpletodon"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
     </Application.Resources>

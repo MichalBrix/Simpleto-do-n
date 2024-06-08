@@ -5,10 +5,10 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using TodoLists.Data;
-using TodoLists.Utils.Mutators.Actions;
+using Simpletodon.Data;
+using Simpletodon.Utils.Mutators.Actions;
 
-namespace TodoLists.Utils.Mutators
+namespace Simpletodon.Utils.Mutators
 {
     public class FinalMutators
     {

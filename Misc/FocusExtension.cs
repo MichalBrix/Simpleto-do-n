@@ -7,7 +7,7 @@ using System.Windows.Input;
 using System.Windows;
 using System.Diagnostics;
 
-namespace TodoLists.Misc
+namespace Simpletodon.Misc
 {
     public static class FocusExtension
     {

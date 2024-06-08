@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using System.Linq;
-using TodoLists.Utils;
+using Simpletodon.Utils;
 
-namespace TodoLists.Data
+namespace Simpletodon.Data
 {
     public class ToDoElement : INotifyPropertyChanged
     {

@@ -169,7 +169,7 @@ namespace Simpletodon
                 e.Handled = true;
             }
             else if ((e.SystemKey == Key.N && Keyboard.Modifiers == ModifierKeys.Alt)
-                    || (e.Key == Key.Enter))
+                    || (e.Key == Key.Enter && Keyboard.Modifiers != ModifierKeys.Shift))
             {
                 if (this.CurrentlyFocusedElement != null)
                 {
